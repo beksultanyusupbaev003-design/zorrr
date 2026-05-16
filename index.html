@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#6C5CE7">
+  <link rel="manifest" href="manifest.json">
+  <title>Накладной Pro</title>
+  <style>
+    :root {
+      --primary: #6C5CE7;
+      --primary-dark: #5A4BD1;
+      --success: #00B894;
+      --warning: #FDCB6E;
+      --danger: #E17055;
+      --bg: #f8f9fc;
+      --card: #ffffff;
+      --text: #2d3436;
+      --text-secondary: #636e72;
+      --radius: 24px;
+      --shadow: 0 10px 30px rgba(0,0,0,0.08);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* PIN ekran */
+    #pinScreen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #6C5CE7, #a29bfe);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      flex-direction: column;
+      transition: opacity 0.4s ease;
+    }
+    .pin-container {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 32px;
+      padding: 40px 30px;
+      width: 320px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+      text-align: center;
+      animation: slideUpPin 0.5s ease;
+    }
+    @keyframes slideUpPin {
+      from { transform: translateY(60px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .pin-input {
+      width: 100%;
+      padding: 20px;
+      font-size: 32px;
+      text-align: center;
+      border: 2px solid #dfe6e9;
+      border-radius: 20px;
+      letter-spacing: 12px;
+      outline: none;
+      transition: var(--transition);
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    .pin-input:focus { border-color: var(--primary); box-shadow: 0 0 20px rgba(108,92,231,0.3); }
+    .pin-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 15px;
+    }
+    .pin-key {
+      aspect-ratio: 1;
+      background: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--text);
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .pin-key:active { transform: scale(0.93); background: #dfe6e9; }
+    .pin-key.wide { grid-column: span 3; background: var(--primary); color: white; }
+    .pin-key.danger { background: #fab1a0; }
+
+    /* App ekran */
+    #appScreen {
+      display: none;
+      width: 100%;
+      max-width: 650px;
+      margin: 15px;
+      background: var(--card);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      padding: 25px;
+      animation: fadeScaleIn 0.5s ease;
+    }
+    @keyframes fadeScaleIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    h2 {
+      text-align: center;
+      font-size: 34px;
+      color: var(--primary);
+      margin: 5px 0 20px;
+      font-weight: 700;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      background: #f0f0f3;
+      padding: 8px;
+      border-radius: 30px;
+      margin-bottom: 20px;
+    }
+    .tab {
+      flex: 1;
+      padding: 16px 0;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      background: transparent;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: var(--transition);
+      color: #636e72;
+    }
+    .tab.active {
+      background: white;
+      box-shadow: 0 5px 15px rgba(108,92,231,0.15);
+      color: var(--primary);
+    }
+    .product {
+      display: flex;
+      align-items: center;
+      background: white;
+      padding: 18px;
+      margin: 15px 0;
+      border-radius: 24px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+      transition: var(--transition);
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+    .product:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(0,0,0,0.07); }
+    .product-image {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      border-radius: 18px;
+      margin-right: 18px;
+      background: #f8f9fc;
+      padding: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .product-image:active { transform: scale(0.95); }
+    .product-info { flex: 1; }
+    .product-name { font-weight: 700; font-size: 20px; color: var(--text); margin-bottom: 6px; }
+    .product-meta { font-size: 15px; color: var(--text-secondary); }
+    .product input {
+      width: 85px;
+      height: 60px;
+      font-size: 24px;
+      text-align: center;
+      border: 2px solid #e0e0e0;
+      border-radius: 18px;
+      font-weight: 600;
+      color: var(--primary);
+      transition: var(--transition);
+    }
+    .product input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 12px rgba(108,92,231,0.2);
+      outline: none;
+    }
+    .buttons-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 30px 0 15px;
+    }
+    .btn {
+      padding: 20px 10px;
+      border: none;
+      border-radius: 22px;
+      font-weight: 700;
+      font-size: 19px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      background: white;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      color: var(--text);
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-warning { background: #ffeaa7; }
+    .btn-info { background: #dfe6e9; }
+    .btn-danger { background: #fab1a0; color: white; }
+    .btn-icon { font-size: 28px; }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+    .modal.active { display: flex; }
+    .modal-card {
+      background: white;
+      border-radius: 28px;
+      padding: 28px;
+      width: 92%;
+      max-width: 520px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+      animation: slideUp 0.4s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .modal-title { font-size: 26px; font-weight: 700; color: var(--primary); }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 34px;
+      cursor: pointer;
+      color: #b2bec3;
+      line-height: 1;
+    }
+    .total-line {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--danger);
+      margin: 18px 0;
+      text-align: right;
+      border-top: 2px solid #eee;
+      padding-top: 18px;
+    }
+    .copy-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      font-size: 20px;
+      transition: var(--transition);
+    }
+    .copy-btn:active { transform: scale(0.97); }
+    .option-card {
+      background: #f8f9fc;
+      padding: 22px;
+      margin: 14px 0;
+      border-radius: 22px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 2px solid transparent;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .option-card:hover { border-color: var(--primary); transform: translateX(5px); }
+    .history-item {
+      padding: 18px;
+      background: #f8f9fc;
+      margin: 12px 0;
+      border-radius: 18px;
+      border-left: 6px solid var(--primary);
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .export-btn {
+      background: #00b894;
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      font-size: 18px;
+      margin-top: 12px;
+      transition: var(--transition);
+    }
+    .notification {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2d3436;
+      color: white;
+      padding: 16px 32px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 16px;
+      z-index: 5000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease, bottom 0.4s ease;
+    }
+    .notification.show { opacity: 1; bottom: 45px; }
+    pre {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      white-space: pre-wrap;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<!-- PIN Screen -->
+<div id="pinScreen">
+  <div class="pin-container">
+    <h2 style="color:#6C5CE7; margin-bottom:10px;">🔐 Kirish</h2>
+    <input type="password" id="pinInput" class="pin-input" maxlength="4" inputmode="numeric" readonly placeholder="● ● ● ●">
+    <div class="pin-keypad" id="pinKeypad"></div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="appScreen">
+  <h2>🧾 Накладной Pro</h2>
+  <div class="tabs" id="tabContainer">
+    <div class="tab active" data-tab="pet">PET (1.5L)</div>
+    <div class="tab" data-tab="rgb">RGB (0.5L)</div>
+    <div class="tab" data-tab="can">CAN (0.45L)</div>
+  </div>
+  <div id="tabContent"></div>
+
+  <div class="buttons-grid">
+    <button class="btn btn-primary" onclick="generateAndShow('standard')">
+      <span class="btn-icon">📝</span> Накладной
+    </button>
+    <button class="btn btn-warning" onclick="showOptavikOptions()">
+      <span class="btn-icon">🏷️</span> Оптовик
+    </button>
+    <button class="btn btn-info" onclick="openHistoryModal()">
+      <span class="btn-icon">📚</span> История
+    </button>
+    <button class="btn btn-danger" onclick="resetAll()">
+      <span class="btn-icon">🔄</span> Сброс
+    </button>
+  </div>
+</div>
+
+<!-- Nakladnoy modal -->
+<div class="modal" id="nakladnoyModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Накладной</span>
+      <button class="close-btn" onclick="closeModal('nakladnoyModal')">&times;</button>
+    </div>
+    <pre id="modalContent"></pre>
+    <div class="total-line" id="modalTotal"></div>
+    <button class="copy-btn" onclick="copyNakladnoy()">📋 Копировать</button>
+  </div>
+</div>
+
+<!-- Optavik variantlar modal -->
+<div class="modal" id="optavikModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title">Скидка вариант</span>
+      <button class="close-btn" onclick="closeModal('optavikModal')">&times;</button>
+    </div>
+    <div class="option-card" onclick="generateAndShow('opt1')">-10% / -5% (Sarbast PET / другие)</div>
+    <div class="option-card" onclick="generateAndShow('opt2')">-5% / -5% (все Sarbast)</div>
+    <div class="option-card" onclick="generateAndShow('opt3')">-8% / -5% (Sarbast PET / другие)</div>
+  </div>
+</div>
+
+<!-- History modal -->
+<div class="modal" id="historyModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title">📋 История</span>
+      <button class="close-btn" onclick="closeModal('historyModal')">&times;</button>
+    </div>
+    <div id="historyList"></div>
+    <button class="export-btn" onclick="exportToExcel()">📊 Скачать Excel</button>
+    <button class="btn btn-danger" style="margin-top:10px; width:100%;" onclick="clearHistory()">🗑️ Очистить</button>
+  </div>
+</div>
+
+<!-- Rasm modal -->
+<div class="modal" id="imageModal" onclick="closeModal('imageModal')">
+  <img id="modalImage" style="max-width:90%; max-height:90%; border-radius:20px;" />
+</div>
+
+<div class="notification" id="notification"></div>
+
+<!-- SheetJS (Excel) kutubxonasi -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+<script>
+  // ============ SOZLAMALAR (o'zingiz o'zgartirishingiz mumkin) ============
+  const BOT_TOKEN = "8639293383:AAFILUtIRLrAuNshdkFqqcH9F9psyWawOGk";
+  const CHAT_ID = "855204630";
+  const PIN_CODE = "4792"; // PIN kodni shu yerga yozing
+
+  // ============ GLOBAL O'ZGARUVCHILAR ============
+  let currentNakladnoyText = '';
+  let history = JSON.parse(localStorage.getItem('nakladnoyHistory') || '[]');
+
+  // Mahsulot ma'lumotlari
+  const products = {
+    pet: [
+      {name:"Sarbast Lite PET", vol:"1.5 л", price:115479, img:"https://i.ibb.co/bMzqRx18/sarbast-lite-pet.jpg"},
+      {name:"Sarbast Original PET", vol:"1.5 л", price:115479, img:"https://i.ibb.co/S4kty86y/sarbast-original-pet.jpg"},
+      {name:"Sarbast Special PET", vol:"1.5 л", price:115479, img:"https://i.ibb.co/WN56c5DV/sarbast-special-pet.jpg"}
+    ],
+    rgb: [
+      {name:"Sarbast Lite RGB", vol:"0.5 л", price:218077, img:"https://i.ibb.co/Df36mfB5/sarbast-lite-rgb.jpg"},
+      {name:"Sarbast Original RGB", vol:"0.5 л", price:218077, img:"https://i.ibb.co/CKB8Smqd/sarbast-original-rgb.jpg"},
+      {name:"Sarbast Special RGB", vol:"0.5 л", price:218077, img:"https://i.ibb.co/1Yh9rJzD/sarbast-special-rgb.jpg"},
+      {name:"Tuborg Green RGB", vol:"0.5 л", price:268307, img:"https://i.ibb.co/VWzV4mcZ/tuborg-green-rgb.jpg"},
+      {name:"Tuborg Lite RGB", vol:"0.45 л", price:268307, img:"https://i.ibb.co/HfgDGFrM/tuborg-lite-rgb.jpg"},
+      {name:"Zatecky Gus Svetly RGB", vol:"0.47 л", price:251632, img:"https://i.ibb.co/hxSDrBCM/zatecky-gus-svetly-rgb.jpg"},
+      {name:"Zatecky Gus Exportniy RGB", vol:"0.47 л", price:251632, img:"https://i.ibb.co/7J9mDKmr/zatecky-gus-exportniy-rgb.jpg"},
+      {name:"Carlsberg Pilsner RGB", vol:"0.45 л", price:301580, img:"https://i.ibb.co/vvjXWMB2/carlsberg-pilsner-rgb.jpg"}
+    ],
+    can: [
+      {name:"Sarbast Lite CAN", vol:"0.45 л", price:241529, img:"https://i.ibb.co/przfWHxv/sarbast-lite-can.jpg"},
+      {name:"Sarbast Original CAN", vol:"0.45 л", price:241529, img:"https://i.ibb.co/4HjJZkb/sarbast-original-can.jpg"},
+      {name:"Sarbast Original Unfiltered CAN", vol:"0.45 л", price:241529, img:"https://i.ibb.co/0yZjC2C3/sarbast-original-unfiltered-can.jpg"},
+      {name:"Sarbast Special CAN", vol:"0.45 л", price:241529, img:"https://i.ibb.co/1t3Y7bZt/sarbast-special-can.jpg"},
+      {name:"Tuborg Green CAN", vol:"0.45 л", price:321968, img:"https://i.ibb.co/hJJdrTK7/tuborg-green-can.jpg"},
+      {name:"Tuborg Lite CAN", vol:"0.45 л", price:321968, img:"https://i.ibb.co/SXLx1T0S/tuborg-lite-can.jpg"},
+      {name:"Zatecky Gus Svetly CAN", vol:"0.45 л", price:301958, img:"https://i.ibb.co/KjyNrtH3/zatecky-gus-svetly-can.jpg"},
+      {name:"Zatecky Gus Exportniy CAN", vol:"0.45 л", price:301958, img:"https://i.ibb.co/wNFhH1MQ/zatecky-gus-exportniy-can.jpg"},
+      {name:"Zatecky Gus Krepkiy CAN", vol:"0.45 л", price:301958, img:"https://i.ibb.co/PsyfwQnh/zatecky-gus-krepkiy-can.jpg"},
+      {name:"Zatecky Gus Nefiltrovaniy CAN", vol:"0.45 л", price:301958, img:"https://i.ibb.co/sp7s7dP3/zatecky-gus-nefiltrovaniy-can.jpg"},
+      {name:"Carlsberg Pilsner CAN", vol:"0.45 л", price:361896, img:"https://i.ibb.co/xS20VDMg/carlsberg-pilsner-can.jpg"}
+    ]
+  };
+
+  // ============ PIN KLAVIATURA ============
+  function createPinKeypad() {
+    const pad = document.getElementById('pinKeypad');
+    pad.innerHTML = '';
+    for(let i=1; i<=9; i++) pad.innerHTML += `<button class="pin-key" onclick="addPinDigit('${i}')">${i}</button>`;
+    pad.innerHTML += `<button class="pin-key danger" onclick="clearPin()">⌫</button>`;
+    pad.innerHTML += `<button class="pin-key" onclick="addPinDigit('0')">0</button>`;
+    pad.innerHTML += `<button class="pin-key wide" onclick="checkPin()">Kirish</button>`;
+  }
+
+  function addPinDigit(d) {
+    const inp = document.getElementById('pinInput');
+    if(inp.value.length < 4) inp.value += d;
+  }
+  function clearPin() { document.getElementById('pinInput').value = ''; }
+  function checkPin() {
+    if(document.getElementById('pinInput').value === PIN_CODE) {
+      document.getElementById('pinScreen').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('pinScreen').style.display = 'none';
+        document.getElementById('appScreen').style.display = 'block';
+        renderTabs('pet');
+        registerSW();
+      }, 300);
+    } else {
+      showNotification('Noto‘g‘ri PIN!', true);
+      document.getElementById('pinInput').value = '';
+    }
+  }
+
+  // ============ TAB VA MAHSULOTLAR ============
+  function renderTabs(tabId) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+    const container = document.getElementById('tabContent');
+    const items = products[tabId];
+    container.innerHTML = items.map(p => `
+      <div class="product">
+        <img class="product-image" src="${p.img}" onclick="openImageModal('${p.img}')" alt="${p.name}">
+        <div class="product-info">
+          <div class="product-name">${p.name}</div>
+          <div class="product-meta">${p.vol} | ${p.price.toLocaleString()} UZS/блок</div>
+        </div>
+        <input type="number" min="0" value="0" data-name="${p.name}" data-price="${p.price}">
+      </div>
+    `).join('');
+
+    // Inputlarga event qo'shish: focus bo'lganda 0 ni o'chirish, bo'sh qolsa 0 qaytarish
+    container.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('focus', function() {
+        if(this.value === '0') this.value = '';
+      });
+      inp.addEventListener('blur', function() {
+        if(this.value === '') this.value = '0';
+      });
+    });
+  }
+
+  document.getElementById('tabContainer').addEventListener('click', e => {
+    if(e.target.classList.contains('tab')) renderTabs(e.target.dataset.tab);
+  });
+
+  // ============ MAHSULOTLARNI YIG'ISH ============
+  function getSelectedProducts() {
+    const inputs = document.querySelectorAll('#tabContent input');
+    return Array.from(inputs)
+      .filter(i => parseInt(i.value) > 0)
+      .map(i => ({
+        name: i.dataset.name,
+        blocks: parseInt(i.value),
+        price: parseInt(i.dataset.price),
+        sum: parseInt(i.value) * parseInt(i.dataset.price)
+      }));
+  }
+
+  // ============ CHEGIRMA QO'LLASH ============
+  function applyDiscount(products, option) {
+    return products.map(p => {
+      let discount = 0, percent = 0;
+      const isPet = p.name.includes('PET');
+      const isSarbast = p.name.startsWith('Sarbast');
+      if(option === 'opt1') {
+        if(isPet && isSarbast) { percent = 10; discount = Math.round(p.sum * 0.10); }
+        else if(isSarbast) { percent = 5; discount = Math.round(p.sum * 0.05); }
+      } else if(option === 'opt2') {
+        if(isSarbast) { percent = 5; discount = Math.round(p.sum * 0.05); }
+      } else if(option === 'opt3') {
+        if(isPet && isSarbast) { percent = 8; discount = Math.round(p.sum * 0.08); }
+        else if(isSarbast) { percent = 5; discount = Math.round(p.sum * 0.05); }
+      }
+      return { ...p, sum: p.sum - discount, discountPercent: percent, discountAmount: discount };
+    });
+  }
+
+  // ============ NAKLADNOY MATNINI SHAKLLANTIRISH ============
+  function generateNakladnoy(type) {
+    const selected = getSelectedProducts();
+    if(selected.length === 0) return null;
+
+    const processed = type === 'standard' ? selected : applyDiscount(selected, type);
+    const total = processed.reduce((s, p) => s + p.sum, 0);
+    const totalBlocks = processed.reduce((s, p) => s + p.blocks, 0);
+
+    // Sarlavha
+    let text = '📦 SARBAST НАКЛАДНАЯ\n';
+    text += 'ℹ️ Обозначения:\n';
+    text += '• PET — баклашка 1.5л\n• CAN — банка\n• RGB — стеклянная бутылка\n';
+    text += '━━━━━━━━━━━━━━━━━━\n';
+
+    // Chegirma turi
+    if(type === 'opt1') text += '🏷️ Оптовик (-10% / -5%)\n';
+    else if(type === 'opt2') text += '🏷️ Оптовик (-5% / -5%)\n';
+    else if(type === 'opt3') text += '🏷️ Оптовик (-8% / -5%)\n';
+    else text += '🏷️ Обычная накладная\n';
+
+    // Mahsulotlar ro'yxati (guruhlanmagan)
+    processed.forEach(p => {
+      let line = `• ${p.name} — ${p.blocks} блоков × ${p.sum.toLocaleString()} = ${(p.blocks * p.price).toLocaleString()} UZS`;
+      if(p.discountPercent) {
+        line += ` (скидка ${p.discountPercent}%)`;
+      }
+      text += line + '\n';
+    });
+
+    // Xulosa
+    text += '━━━━━━━━━━━━━━━━━━\n';
+    text += `📦 Всего блоков: ${totalBlocks}\n`;
+    const withoutDiscount = selected.reduce((s, p) => s + p.blocks * p.price, 0);
+    text += `💰 Без скидки: ${withoutDiscount.toLocaleString()} UZS\n`;
+    const totalDiscount = withoutDiscount - total;
+    if(totalDiscount > 0) text += `🎁 Скидка: -${totalDiscount.toLocaleString()} UZS\n\n`;
+    else text += '\n';
+    text += `✅ ИТОГО: ${total.toLocaleString()} UZS`;
+
+    return { text, total, processed, fullText: text };
+  }
+
+  // ============ GENERATSIYA VA KO'RSATISH ============
+  function generateAndShow(type) {
+    const result = generateNakladnoy(type);
+    if(!result) { showNotification('Hech narsa tanlanmagan!', true); return; }
+
+    document.getElementById('modalTitle').textContent = 
+      type === 'standard' ? 'Накладной' : (type === 'opt1' ? 'Оптовик -10/-5' : (type === 'opt2' ? 'Оптовик -5/-5' : 'Оптовик -8/-5'));
+    document.getElementById('modalContent').textContent = result.text;
+    document.getElementById('modalTotal').textContent = `✅ ИТОГО: ${result.total.toLocaleString()} UZS`;
+    currentNakladnoyText = result.fullText;
+    openModal('nakladnoyModal');
+    saveToHistory(type, result);
+    sendToTelegram(type, result);
+  }
+
+  function showOptavikOptions() { openModal('optavikModal'); }
+
+  // ============ TARIX SAQLASH ============
+  function saveToHistory(type, result) {
+    history.unshift({
+      type,
+      date: new Date().toISOString(),
+      total: result.total,
+      text: result.text
+    });
+    if(history.length > 50) history = history.slice(0,50);
+    localStorage.setItem('nakladnoyHistory', JSON.stringify(history));
+  }
+
+  function openHistoryModal() {
+    const list = document.getElementById('historyList');
+    if(history.length === 0) list.innerHTML = '<p>📭 История пуста</p>';
+    else {
+      list.innerHTML = history.map((h, i) => `
+        <div class="history-item" onclick="viewHistoryItem(${i})">
+          <b>${new Date(h.date).toLocaleString()}</b> - ${h.type}<br>
+          <small>${h.total.toLocaleString()} UZS</small>
+        </div>
+      `).join('');
+    }
+    openModal('historyModal');
+  }
+
+  function viewHistoryItem(index) {
+    const h = history[index];
+    document.getElementById('modalTitle').textContent = h.type;
+    document.getElementById('modalContent').textContent = h.text;
+    document.getElementById('modalTotal').textContent = `✅ ИТОГО: ${h.total.toLocaleString()} UZS`;
+    currentNakladnoyText = h.text;
+    openModal('nakladnoyModal');
+    closeModal('historyModal');
+  }
+
+  function clearHistory() {
+    if(confirm('История очистить?')) {
+      history = [];
+      localStorage.removeItem('nakladnoyHistory');
+      openHistoryModal();
+      showNotification('История очищена!');
+    }
+  }
+
+  // ============ EXCEL EKSPORT ============
+  function exportToExcel() {
+    if(history.length === 0) { showNotification('История пуста', true); return; }
+    const data = history.map(h => ({
+      'Дата': new Date(h.date).toLocaleString(),
+      'Тип': h.type,
+      'Сумма (UZS)': h.total
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'История');
+    XLSX.writeFile(wb, 'nakladnoy_history.xlsx');
+    showNotification('Excel yuklandi!');
+  }
+
+  // ============ TELEGRAM BOT ============
+  function escapeMarkdownV2(text) {
+    return text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, '\\$&');
+  }
+
+  async function sendToTelegram(type, result) {
+    try {
+      let msg = `📦 *${escapeMarkdownV2('SARBAST НАКЛАДНАЯ')}*\n`;
+      msg += `ℹ️ Обозначения: PET \\- баклашка 1\\.5л, CAN \\- банка, RGB \\- стеклянная бутылка\n`;
+      msg += `━━━━━━━━━━━━━━━━━\n`;
+      const typeNames = { standard: 'Обычная', opt1: 'Оптовик (-10%/-5%)', opt2: 'Оптовик (-5%/-5%)', opt3: 'Оптовик (-8%/-5%)' };
+      msg += `🏷️ *${escapeMarkdownV2(typeNames[type])}*\n`;
+
+      result.processed.forEach(p => {
+        let line = `• ${escapeMarkdownV2(p.name)} — ${p.blocks} бл\\. × ${p.sum.toLocaleString()} = ${(p.blocks * p.price).toLocaleString()} UZS`;
+        if(p.discountPercent) line += ` (скидка ${p.discountPercent}%)`;
+        msg += line + '\n';
+      });
+
+      const totalBlocks = result.processed.reduce((s,p) => s + p.blocks, 0);
+      msg += `━━━━━━━━━━━━━━━━━\n`;
+      msg += `📦 Всего блоков: ${totalBlocks}\n`;
+      msg += `💰 Без скидки: ${result.processed.reduce((s,p)=> s + p.blocks*p.price, 0).toLocaleString()} UZS\n`;
+      const discount = result.processed.reduce((s,p)=> s + (p.blocks*p.price - p.sum), 0);
+      if(discount > 0) msg += `🎁 Скидка: \\-${discount.toLocaleString()} UZS\n`;
+      msg += `✅ *ИТОГО: ${result.total.toLocaleString()} UZS*`;
+
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'MarkdownV2' })
+      });
+    } catch(e) { console.log('Telegram xatosi:', e); }
+  }
+
+  // ============ YORDAMCHI FUNKSIYALAR ============
+  function openImageModal(src) {
+    document.getElementById('modalImage').src = src;
+    openModal('imageModal');
+  }
+
+  function copyNakladnoy() {
+    if(!currentNakladnoyText) return showNotification('Kopiya yo‘q', true);
+    navigator.clipboard.writeText(currentNakladnoyText).then(() => showNotification('Nusxalandi!'));
+  }
+
+  function resetAll() {
+    if(confirm('Hamma maydonlar 0 qilinsinmi?')) {
+      document.querySelectorAll('#tabContent input').forEach(i => i.value = 0);
+      showNotification('Tozalandi!');
+    }
+  }
+
+  function openModal(id) { document.getElementById(id).classList.add('active'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+  function showNotification(msg, isError=false) {
+    const el = document.getElementById('notification');
+    el.textContent = msg;
+    el.style.background = isError ? '#e17055' : '#2d3436';
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2500);
+  }
+
+  function registerSW() {
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(() => console.log('SW OK')).catch(() => {});
+    }
+  }
+
+  // ============ TASHQI BOSISHNI YOPISH ============
+  window.onclick = e => {
+    if(e.target.classList.contains('modal')) e.target.classList.remove('active');
+  };
+
+  // ============ ISHGA TUSHIRISH ============
+  window.onload = () => {
+    createPinKeypad();
+    document.getElementById('pinInput').addEventListener('keydown', e => { if(e.key === 'Enter') checkPin(); });
+  };
+</script>
+</body>
+</html>
