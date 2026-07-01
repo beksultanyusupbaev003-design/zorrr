@@ -952,6 +952,11 @@ button:active {
                 <div class="option-discount">-8% / -5%</div>
                 <div class="option-desc">Sarbast PET: 8% | Другие Sarbast: 5%</div>
             </div>
+            <div class="option-card" onclick="selectOptavikOption(4)">
+                <div class="option-title">Вариант 4</div>
+                <div class="option-discount">-12% / -5%</div>
+                <div class="option-desc">Sarbast PET: 12% | Другие Sarbast: 5%</div>
+            </div>
         </div>
     </div>
 </div>
@@ -1107,6 +1112,7 @@ function selectOptavikOption(option) {
         case 1: title = "НАКЛАДНОЙ (Оптовик -10%/-5%)"; break;
         case 2: title = "НАКЛАДНОЙ (Оптовик -5%/-5%)"; break;
         case 3: title = "НАКЛАДНОЙ (Оптовик -8%/-5%)"; break;
+        case 4: title = "НАКЛАДНОЙ (Оптовик -12%/-5%)"; break;
     }
     document.getElementById('modalTitle').textContent = title;
 }
@@ -1277,6 +1283,10 @@ function generateOptavik(option) {
                     if (isSarbastPet) discountPercent = 8;
                     else if (isSarbast) discountPercent = 5;
                     break;
+                case 4:
+                    if (isSarbastPet) discountPercent = 12;
+                    else if (isSarbast) discountPercent = 5;
+                    break;
             }
 
             let priceAfterDiscount = Math.round(price * (100 - discountPercent) / 100);
@@ -1307,6 +1317,7 @@ function generateOptavik(option) {
         case 1: optionTitle = "🏷️ Оптовик (-10% / -5%)"; break;
         case 2: optionTitle = "🏷️ Оптовик (-5% / -5%)"; break;
         case 3: optionTitle = "🏷️ Оптовик (-8% / -5%)"; break;
+        case 4: optionTitle = "🏷️ Оптовик (-12% / -5%)"; break;
     }
 
     let fullText = "📦 SARBAST НАКЛАДНАЯ\n\n";
@@ -1341,6 +1352,7 @@ function generateOptavik(option) {
             case 1: typeName = "Оптовик (-10%/-5%)"; break;
             case 2: typeName = "Оптовик (-5%/-5%)"; break;
             case 3: typeName = "Оптовик (-8%/-5%)"; break;
+            case 4: typeName = "Оптовик (-12%/-5%)"; break;
         }
         // Telegramga eski formatda yuboriladi
         sendToTelegram(typeName, totalAfterDiscount, allProducts.map(p => ({
@@ -1361,6 +1373,7 @@ function generateOptavik(option) {
             case 1: typeName = "Оптовик (-10%/-5%)"; break;
             case 2: typeName = "Оптовик (-5%/-5%)"; break;
             case 3: typeName = "Оптовик (-8%/-5%)"; break;
+            case 4: typeName = "Оптовик (-12%/-5%)"; break;
         }
         const nakladnoyData = {
             id: Date.now(),
