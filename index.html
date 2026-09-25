@@ -1,702 +1,2240 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>ZOLOTO N1</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Накладной — Blok Hisob</title>
+<script>
+(function() {
+    try {
+        var saved = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var isDark = saved ? (saved === 'dark') : prefersDark;
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    } catch (e) {}
+})();
+</script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-
-:root{
-  --bg1:#000000;
-  --glass:rgba(255,255,255,0.06);
-  --glass2:rgba(255,255,255,0.1);
-  --glass-border:rgba(255,255,255,0.12);
-  --text:#F2F2F7;
-  --sub:#98989F;
-  --gold:#0A84FF;
-  --gold2:#3D9BFF;
-  --gold3:#0060cc;
-  --green:#34C759;
-  --green2:#2BB14E;
-  --ph:#5c5c60;
-  --r:20px;
-  --shadow:0 8px 30px rgba(0,0,0,0.55);
+:root {
+    --ios-blue: #007AFF;
+    --ios-green: #34C759;
+    --ios-orange: #FF9500;
+    --ios-red: #FF3B30;
+    --ios-purple: #AF52DE;
+    --ios-bg: #F2F2F7;
+    --ios-card: #FFFFFF;
+    --ios-text: #1C1C1E;
+    --ios-text-secondary: #8E8E93;
+    --ios-separator: rgba(60, 60, 67, 0.1);
+    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.06);
+    --shadow-elevated: 0 8px 30px rgba(0, 0, 0, 0.10);
 }
 
-body{
-  background:var(--bg1);
-  background-image:linear-gradient(180deg,#000000 0%,#111114 100%);
-  background-attachment:fixed;
-  color:var(--text);
-  min-height:100vh;
-  padding:1rem;
-  display:flex;flex-direction:column;align-items:center;
-  font-family:-apple-system,"SF Pro Display","SF Pro Text","Inter",system-ui,sans-serif;
-  -webkit-font-smoothing:antialiased;
-}
-.app{max-width:860px;width:100%}
-
-/* ── CARD ── */
-.card{
-  background:var(--glass);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border-radius:var(--r);
-  border:1px solid var(--glass-border);
-  box-shadow:var(--shadow);
-  padding:1.4rem 1.4rem 1.2rem;
-  margin-bottom:1rem;
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* ── HEADER ── */
-.head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1.3rem}
-
-.zoloto-title{
-  font-size:1.55rem;
-  font-weight:800;
-  letter-spacing:-.02em;
-  color:var(--text);
-  display:flex;align-items:center;gap:10px;
-}
-.zoloto-title i{color:var(--gold)}
-
-/* N1 badge */
-.badge{
-  background:linear-gradient(135deg,var(--gold3),var(--gold));
-  color:#fff;
-  font-size:.75rem;padding:.22rem .85rem;
-  border-radius:30px;font-weight:700;
-  box-shadow:0 2px 10px rgba(10,132,255,0.4);
-  letter-spacing:.01em;
+body {
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(180deg, #EEF1F6 0%, #E7EAF1 100%);
+    background-attachment: fixed;
+    padding: 16px;
+    margin: 0;
+    color: var(--ios-text);
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Theme toggle */
-#darkBtn{
-  background:var(--glass2);
-  border:1px solid var(--glass-border);
-  color:var(--text);
-  padding:.48rem 1rem;border-radius:30px;
-  font-size:.83rem;font-weight:600;
-  display:inline-flex;align-items:center;gap:6px;
-  cursor:pointer;backdrop-filter:blur(10px);
-  transition:all .18s;
-}
-#darkBtn:hover{background:rgba(10,132,255,0.15);border-color:rgba(10,132,255,0.35)}
-
-/* ── BUTTONS ── */
-.row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:.9rem}
-.btn{
-  border:1px solid var(--glass-border);
-  color:var(--text);padding:.52rem 1.1rem;
-  border-radius:30px;font-size:.87rem;font-weight:600;
-  display:inline-flex;align-items:center;gap:7px;
-  cursor:pointer;background:var(--glass);
-  backdrop-filter:blur(10px);
-  transition:all .15s;white-space:nowrap;user-select:none;
-}
-.btn:hover{
-  background:var(--glass2);
-  border-color:rgba(10,132,255,0.3);
-  transform:translateY(-1px);
-  box-shadow:0 4px 14px rgba(0,0,0,0.3);
-}
-.btn.pri{
-  background:linear-gradient(135deg,var(--gold3),var(--gold));
-  border-color:transparent;color:#fff;font-weight:700;
-  box-shadow:0 4px 16px rgba(10,132,255,0.4);
-}
-.btn.pri:hover{
-  transform:translateY(-1px);
-  box-shadow:0 6px 20px rgba(10,132,255,0.5);
-}
-.btn.grn{
-  background:linear-gradient(135deg,var(--green),var(--green2));
-  border-color:transparent;color:#fff;
-  box-shadow:0 4px 16px rgba(52,199,89,0.3);
-}
-.btn.grn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(52,199,89,0.45)}
-.btn:disabled{opacity:.3;cursor:not-allowed;transform:none!important;box-shadow:none!important}
-
-/* ── DROP ZONE ── */
-.drop-zone{
-  border:1.5px dashed rgba(10,132,255,0.35);
-  border-radius:18px;
-  padding:3rem 1.5rem;text-align:center;cursor:pointer;
-  transition:all .2s;position:relative;
-  background:rgba(10,132,255,0.04);
-}
-.drop-zone:hover,.drop-zone.over{
-  border-color:var(--gold);
-  background:rgba(10,132,255,0.08);
-  box-shadow:0 0 26px rgba(10,132,255,0.12);
-}
-.drop-zone i.big{
-  font-size:2.6rem;color:var(--gold);opacity:.75;
-  display:block;margin-bottom:.8rem;
-}
-.drop-zone .dt{font-size:1rem;font-weight:700;margin-bottom:.3rem;color:var(--text)}
-.drop-zone .ds{font-size:.83rem;color:var(--sub)}
-.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-
-/* ── PROGRESS ── */
-.prog-wrap{margin:.8rem 0 .4rem;display:none}
-.prog-bar{background:rgba(255,255,255,0.1);border-radius:30px;height:6px;overflow:hidden}
-.prog-fill{
-  height:6px;
-  background:linear-gradient(90deg,var(--gold3),var(--gold),var(--gold2));
-  width:0%;border-radius:30px;transition:width .1s;
-}
-.prog-lbl{font-size:.8rem;color:var(--sub);font-weight:600;margin-top:6px;text-align:center}
-
-/* ── STATS ── */
-.stats{
-  display:flex;justify-content:space-between;
-  font-size:.8rem;color:var(--sub);font-weight:600;
-  padding:0 .2rem;margin-top:.4rem;
-}
-.stats b{color:var(--gold)}
-
-/* ── CHIPS ── */
-.chips-wrap{display:none}
-.chips-ttl{font-size:.72rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  width:82px;padding:.55rem .4rem .5rem;
-  border-radius:16px;
-  border:1px solid var(--glass-border);
-  background:var(--glass);color:var(--sub);
-  cursor:pointer;backdrop-filter:blur(8px);
-  transition:all .15s;user-select:none;text-align:center;
-}
-.chip img,.chip .chip-ph{
-  width:40px;height:40px;object-fit:contain;
-  border-radius:10px;background:#fff;padding:3px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.2);
-}
-.chip .chip-ph{display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1.1rem;background:var(--glass2)}
-.chip .clabel{font-size:.72rem;font-weight:700;line-height:1.2;color:var(--sub)}
-.chip .clabel b{display:block;font-weight:800;font-size:.7rem}
-.chip.on{
-  background:linear-gradient(135deg,var(--gold3),var(--gold));
-  border-color:transparent;color:#fff;
-  box-shadow:0 3px 12px rgba(10,132,255,0.4);
-}
-.chip.on .clabel,.chip.on .clabel b{color:#fff}
-.chip:hover:not(.on){background:var(--glass2);color:var(--text);border-color:rgba(10,132,255,0.3)}
-
-/* ── VIEWER ── */
-.viewer{text-align:center}
-.vtabs{
-  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:1.1rem;
-}
-.vpname{
-  font-size:1.05rem;font-weight:800;
-  color:var(--text);
-  margin-bottom:1rem;
-  display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;
-}
-.vpname i{color:var(--gold)}
-
-/* ── PRODUCT PHOTO ── */
-.pimg-wrap{display:flex;justify-content:center;margin-bottom:.9rem}
-.pimg{
-  width:130px;height:130px;object-fit:contain;
-  border-radius:18px;
-  background:#fff;padding:8px;
-  box-shadow:0 2px 14px rgba(0,0,0,0.3);
-}
-.pimg-ph{
-  width:130px;height:130px;border-radius:18px;
-  display:flex;align-items:center;justify-content:center;
-  border:1px dashed var(--glass-border);
-  background:var(--glass);
-  color:var(--gold);font-size:1.9rem;opacity:.5;
+h2 {
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--ios-text);
+    margin: 8px 0 20px 0;
+    letter-spacing: -0.5px;
+    text-shadow: none;
 }
 
-.qbox{
-  background:#fff;
-  padding:1.1rem;border-radius:20px;
-  display:inline-block;
-  box-shadow:0 6px 24px rgba(0,0,0,0.3);
-  margin-bottom:.9rem;
+/* Segmented control style tabs */
+.tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    background: rgba(118, 118, 128, 0.12);
+    border-radius: 14px;
+    padding: 4px;
+    backdrop-filter: blur(10px);
 }
-.qbox img{
-  width:min(300px,78vw);height:auto;aspect-ratio:1/1;
-  display:block;border-radius:12px;
+.tab {
+    flex: 1;
+    padding: 12px 5px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    background: transparent;
+    color: var(--ios-text-secondary);
+    border-radius: 11px;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: -0.2px;
 }
-.qtxt{
-  font-size:.78rem;font-weight:700;word-break:break-all;
-  background:var(--glass);
-  padding:.5rem 1rem;border-radius:30px;
-  border:1px solid var(--glass-border);
-  color:var(--gold2);
-  display:inline-block;max-width:96%;
-  margin:.1rem auto .5rem;
-  font-family:"SF Mono",'Courier New',monospace;
-}
-.qidx{font-size:.85rem;font-weight:700;color:var(--sub);margin-bottom:.7rem}
-.dl1{
-  padding:.5rem 1.2rem;border-radius:30px;
-  border:none;
-  background:linear-gradient(135deg,var(--green),var(--green2));
-  color:#fff;font-size:.82rem;font-weight:700;
-  cursor:pointer;display:inline-flex;align-items:center;gap:6px;
-  transition:all .15s;box-shadow:0 3px 12px rgba(52,199,89,0.3);
-}
-.dl1:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(52,199,89,0.45)}
-.navrow{display:flex;justify-content:center;gap:12px;margin-top:1rem}
-.nb{
-  width:56px;height:56px;border-radius:16px;
-  border:1px solid var(--glass-border);
-  background:var(--glass);cursor:pointer;font-size:1.15rem;color:var(--text);
-  display:flex;align-items:center;justify-content:center;
-  transition:all .15s;user-select:none;
-  box-shadow:0 2px 10px rgba(0,0,0,0.25);
-}
-.nb:hover{
-  background:linear-gradient(135deg,var(--gold3),var(--gold));
-  border-color:transparent;color:#fff;
-  transform:translateY(-2px);
-  box-shadow:0 6px 18px rgba(10,132,255,0.4);
+.tab:hover { color: var(--ios-text); }
+.tab.active {
+    background: var(--ios-card);
+    color: var(--ios-text);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 1px 1px rgba(0,0,0,0.06);
+    transform: scale(1.0);
 }
 
-/* Placeholder */
-.ph-box{
-  padding:3.5rem 1.5rem;
-  border:1px dashed var(--glass-border);
-  border-radius:16px;color:var(--sub);text-align:center;
+.tab-content {
+    display: none;
+    background: var(--ios-card);
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: var(--shadow-elevated);
+    animation: fadeInUp 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.ph-box i{font-size:2rem;opacity:.35;display:block;margin-bottom:.9rem}
-.ph-box p{font-size:.92rem;font-weight:600}
+.tab-content.active { display: block; }
 
-/* Animations */
-.sR{animation:sR .2s ease}
-.sL{animation:sL .2s ease}
-@keyframes sR{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
-@keyframes sL{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:translateX(0)}}
-
-/* Light mode (iOS light) */
-body.light{
-  --bg1:#EEF1F6;
-  --glass:rgba(255,255,255,0.75);
-  --glass2:rgba(255,255,255,0.95);
-  --glass-border:rgba(60,60,67,0.12);
-  --text:#1C1C1E;
-  --sub:#8E8E93;
-  --ph:#C7C7CC;
-  background-image:linear-gradient(180deg,#EEF1F6 0%,#E7EAF1 100%);
-  background-color:var(--bg1);
-}
-body.light .qbox{box-shadow:0 6px 20px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04)}
-body.light select{background:rgba(255,255,255,0.9);color:var(--text)}
-body.light option{background:#fff}
-body.light textarea{background:rgba(255,255,255,0.9);color:var(--text)}
-
-footer{
-  margin-top:.4rem;text-align:center;font-size:.76rem;
-  padding-bottom:.8rem;
-  color:var(--sub);opacity:.6;
-  letter-spacing:.02em;
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-@media(max-width:560px){
-  .row{justify-content:center}
-  .zoloto-title{font-size:1.25rem}
-  .nb{width:50px;height:50px;font-size:1.05rem}
+.product {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    font-size: 17px;
+    padding: 14px 4px;
+    border-radius: 0;
+    background: transparent;
+    transition: background 0.25s ease;
+    border-bottom: 1px solid var(--ios-separator);
 }
+.product:last-child {
+    border-bottom: none;
+}
+.product:hover {
+    background: rgba(0, 122, 255, 0.04);
+    transform: none;
+}
+.product:active {
+    background: rgba(0, 122, 255, 0.08);
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+.product-name {
+    font-weight: 600;
+    color: var(--ios-text);
+    font-size: 16px;
+    letter-spacing: -0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.product-volume {
+    font-size: 14px;
+    color: var(--ios-text-secondary);
+    margin-top: 2px;
+    font-weight: 500;
+}
+.product-price {
+    font-size: 15px;
+    color: var(--ios-green);
+    font-weight: 700;
+    margin-top: 4px;
+    letter-spacing: -0.2px;
+}
+.product input {
+    width: 78px;
+    height: 48px;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 14px;
+    border: none;
+    background: rgba(118, 118, 128, 0.10);
+    color: var(--ios-text);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-appearance: textfield;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+.product input::-webkit-outer-spin-button,
+.product input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.product input:focus {
+    border-color: transparent;
+    background: rgba(0, 122, 255, 0.12);
+    box-shadow: 0 0 0 2.5px rgba(0, 122, 255, 0.45);
+    outline: none;
+    transform: scale(1.04);
+}
+
+/* Buttons grid */
+.buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 22px 0 8px 0;
+}
+button {
+    padding: 16px 10px;
+    font-size: 17px;
+    font-family: inherit;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+    min-height: 86px;
+    box-shadow: var(--shadow-soft);
+}
+button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.55);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+button:focus:not(:active)::after {
+    animation: ripple 0.85s ease-out;
+}
+@keyframes ripple {
+    0% { transform: scale(0, 0); opacity: 0.45; }
+    20% { transform: scale(25, 25); opacity: 0.25; }
+    100% { opacity: 0; transform: scale(40, 40); }
+}
+button:active {
+    transform: scale(0.96);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+}
+
+.btn-green {
+    background: linear-gradient(135deg, #34C759, #2BB14E);
+    color: white;
+}
+.btn-green:hover {
+    background: linear-gradient(135deg, #3DDB66, #34C759);
+    box-shadow: 0 6px 16px rgba(52, 199, 89, 0.35);
+}
+.btn-yellow {
+    background: linear-gradient(135deg, #FF9F0A, #FF9500);
+    color: white;
+}
+.btn-yellow:hover {
+    background: linear-gradient(135deg, #FFB13D, #FF9F0A);
+    box-shadow: 0 6px 16px rgba(255, 149, 0, 0.35);
+}
+.btn-red {
+    background: linear-gradient(135deg, #FF453A, #FF3B30);
+    color: white;
+}
+.btn-red:hover {
+    background: linear-gradient(135deg, #FF6961, #FF453A);
+    box-shadow: 0 6px 16px rgba(255, 59, 48, 0.35);
+}
+.btn-blue {
+    background: linear-gradient(135deg, #0A84FF, #007AFF);
+    color: white;
+}
+.btn-blue:hover {
+    background: linear-gradient(135deg, #3D9BFF, #0A84FF);
+    box-shadow: 0 6px 16px rgba(0, 122, 255, 0.35);
+}
+.btn-purple {
+    background: linear-gradient(135deg, #BF5AF2, #AF52DE);
+    color: white;
+}
+.btn-purple:hover {
+    background: linear-gradient(135deg, #D17DFA, #BF5AF2);
+    box-shadow: 0 6px 16px rgba(175, 82, 222, 0.35);
+}
+.btn-icon {
+    font-size: 26px;
+    margin-bottom: 2px;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+}
+.btn-text {
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+    letter-spacing: -0.2px;
+}
+
+/* Modal oyna */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.modal-content {
+    background-color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    margin: 6% auto;
+    padding: 0;
+    border-radius: 24px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid rgba(255,255,255,0.5);
+}
+@keyframes slideUp {
+    from { transform: translateY(40px) scale(0.97); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.modal-header {
+    background: linear-gradient(135deg, #34C759, #2BB14E);
+    color: white;
+    padding: 22px 20px;
+    border-radius: 24px 24px 0 0;
+    text-align: center;
+    position: relative;
+}
+.modal-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+.modal-body {
+    padding: 22px;
+}
+.nakladnoy-content {
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 15px;
+    white-space: pre-line;
+    text-align: left;
+    background: rgba(118, 118, 128, 0.08);
+    padding: 18px;
+    border-radius: 16px;
+    margin: 18px 0;
+    border: none;
+    max-height: 300px;
+    overflow-y: auto;
+    line-height: 1.5;
+}
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+.modal-btn {
+    padding: 16px;
+    font-size: 17px;
+    font-family: inherit;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: -0.2px;
+}
+.modal-btn:active {
+    transform: scale(0.96);
+}
+.modal-btn-copy {
+    background: linear-gradient(135deg, #0A84FF, #007AFF);
+    color: white;
+    box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3);
+}
+.modal-btn-copy:hover {
+    background: linear-gradient(135deg, #3D9BFF, #0A84FF);
+    box-shadow: 0 6px 18px rgba(0, 122, 255, 0.4);
+}
+.close-modal {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    font-size: 22px;
+    cursor: pointer;
+    color: white;
+    background: rgba(0,0,0,0.18);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+.close-modal:hover {
+    background: rgba(0,0,0,0.3);
+    transform: rotate(90deg);
+}
+
+/* Variant tanlash modal oynasi */
+.option-card {
+    background: rgba(118, 118, 128, 0.08);
+    padding: 18px;
+    margin: 12px 0;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+    text-align: center;
+}
+.option-card:hover {
+    background: rgba(0, 122, 255, 0.08);
+    transform: translateY(-2px) scale(1.01);
+    border-color: var(--ios-blue);
+    box-shadow: 0 6px 18px rgba(0, 122, 255, 0.15);
+}
+.option-card:active {
+    transform: scale(0.98);
+}
+.option-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ios-text);
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+}
+.option-discount {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--ios-red);
+    margin: 8px 0;
+    letter-spacing: -0.5px;
+}
+.option-desc {
+    color: var(--ios-text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    left: 20px;
+    max-width: 360px;
+    margin: 0 auto;
+    background: rgba(52, 199, 89, 0.95);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 16px 22px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 15px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    transform: translateY(-100px);
+    opacity: 0;
+    transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1000;
+    letter-spacing: -0.2px;
+}
+.notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+.notification.error {
+    background: rgba(255, 59, 48, 0.95);
+}
+
+.date-time {
+    color: var(--ios-text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    text-align: center;
+}
+.total-line {
+    font-weight: 800;
+    color: var(--ios-red);
+    font-size: 20px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--ios-separator);
+    text-align: center;
+    letter-spacing: -0.3px;
+}
+.section-title {
+    font-weight: 700;
+    color: var(--ios-text);
+    margin: 14px 0 8px 0;
+    font-size: 17px;
+    padding: 10px 16px;
+    background: rgba(118, 118, 128, 0.08);
+    border-radius: 12px;
+    text-align: center;
+}
+.product-line {
+    margin: 10px 0;
+    padding-left: 10px;
+}
+.empty-message {
+    color: var(--ios-text-secondary);
+    font-style: normal;
+    font-weight: 500;
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 16px;
+}
+
+/* Tarix modal */
+.history-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin: 0 0 8px 0;
+}
+.history-item {
+    background: rgba(118, 118, 128, 0.08);
+    padding: 16px;
+    margin: 10px 0;
+    border-radius: 16px;
+    border-left: none;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+.history-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    bottom: 12px;
+    width: 4px;
+    background: var(--ios-green);
+    border-radius: 4px;
+}
+.history-item {
+    padding-left: 20px;
+}
+.history-item:hover {
+    background: rgba(0, 122, 255, 0.06);
+    transform: translateX(4px);
+}
+.history-item:active {
+    transform: scale(0.98) translateX(4px);
+}
+.history-date {
+    font-weight: 700;
+    color: var(--ios-text);
+    margin-bottom: 4px;
+    font-size: 15px;
+    letter-spacing: -0.2px;
+}
+.history-total {
+    color: var(--ios-green);
+    font-weight: 800;
+    float: right;
+    font-size: 15px;
+}
+.history-type {
+    color: var(--ios-text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    clear: both;
+}
+
+/* ===== Jonli jami summa (Live total) ===== */
+.live-total {
+    position: sticky;
+    top: 8px;
+    z-index: 50;
+    margin: 4px 0 14px 0;
+    padding: 9px 14px 9px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(18px) saturate(180%);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+    transition: opacity 0.35s ease;
+}
+.live-total::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 4px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, var(--ios-green), var(--ios-blue));
+}
+.live-total.empty { opacity: 0.8; }
+.lt-label { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; color: var(--ios-text-secondary); }
+.lt-stats { font-size: 12px; font-weight: 600; color: var(--ios-text-secondary); margin-top: 2px; }
+.lt-amount {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--ios-green);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    transform-origin: right center;
+    transition: color 0.3s ease;
+}
+.lt-amount small { font-size: 12px; font-weight: 700; color: var(--ios-text-secondary); letter-spacing: 0; }
+.lt-amount.down { color: var(--ios-orange); }
+.lt-amount.bump { animation: amtBump 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes amtBump {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.14); }
+    100% { transform: scale(1); }
+}
+.live-total.lt-up   { animation: ltRingUp 0.8s ease; }
+.live-total.lt-down { animation: ltRingDown 0.8s ease; }
+@keyframes ltRingUp {
+    0%   { box-shadow: 0 0 0 0 rgba(52,199,89,0.55), 0 8px 30px rgba(0,0,0,0.10); }
+    100% { box-shadow: 0 0 0 18px rgba(52,199,89,0), 0 8px 30px rgba(0,0,0,0.10); }
+}
+@keyframes ltRingDown {
+    0%   { box-shadow: 0 0 0 0 rgba(255,149,0,0.55), 0 8px 30px rgba(0,0,0,0.10); }
+    100% { box-shadow: 0 0 0 18px rgba(255,149,0,0), 0 8px 30px rgba(0,0,0,0.10); }
+}
+.lt-delta {
+    position: absolute;
+    right: 14px;
+    bottom: -12px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    background: var(--ios-green);
+    box-shadow: 0 4px 12px rgba(52,199,89,0.45);
+    pointer-events: none;
+    white-space: nowrap;
+    animation: ltDelta 1.15s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+.lt-delta.neg { background: var(--ios-orange); box-shadow: 0 4px 12px rgba(255,149,0,0.45); }
+@keyframes ltDelta {
+    0%   { opacity: 0; transform: translateY(-10px) scale(0.7); }
+    20%  { opacity: 1; transform: translateY(8px) scale(1.08); }
+    100% { opacity: 0; transform: translateY(40px) scale(1); }
+}
+
+/* ===== Tarixdan qayta hisoblash (qalamcha) ===== */
+.history-item { padding-right: 76px; }
+.history-edit {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 100%);
+    box-shadow: 0 6px 16px rgba(10, 132, 255, 0.38), inset 0 1px 0 rgba(255,255,255,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+.history-edit svg { width: 22px; height: 22px; pointer-events: none; }
+.history-edit:hover {
+    transform: translateY(-50%) scale(1.1) rotate(-10deg);
+    box-shadow: 0 8px 22px rgba(10, 132, 255, 0.5), inset 0 1px 0 rgba(255,255,255,0.35);
+}
+.history-edit:active { transform: translateY(-50%) scale(0.88); }
+.history-edit.spin { animation: pencilSpin 0.6s cubic-bezier(0.34, 1.3, 0.64, 1) forwards; }
+@keyframes pencilSpin {
+    0%   { transform: translateY(-50%) rotate(0deg) scale(1); }
+    35%  { transform: translateY(-50%) rotate(-30deg) scale(1.3); }
+    100% { transform: translateY(-50%) rotate(360deg) scale(1.05); }
+}
+.history-item.edit-launch { animation: itemLaunch 0.5s ease forwards; }
+@keyframes itemLaunch {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(0.96) translateX(-6px); background: rgba(10,132,255,0.18); }
+    100% { transform: scale(1.02) translateX(10px); background: rgba(10,132,255,0.12); }
+}
+.modal.edit-out { animation: editOut 0.32s ease forwards; }
+@keyframes editOut { to { opacity: 0; } }
+
+.edit-ripple {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(10,132,255,0.55) 0%, rgba(94,92,230,0.35) 60%, rgba(94,92,230,0.15) 100%);
+    z-index: 1500;
+    pointer-events: none;
+    animation: editRipple 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+@keyframes editRipple {
+    0%   { transform: scale(1); opacity: 0.95; }
+    70%  { opacity: 0.6; }
+    100% { transform: scale(180); opacity: 0; }
+}
+
+.product.edit-loaded {
+    animation: rowLoad 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: var(--d, 0ms);
+}
+@keyframes rowLoad {
+    0%   { opacity: 0; transform: translateX(70px) scale(0.92); background: rgba(10,132,255,0.28); }
+    60%  { opacity: 1; transform: translateX(-6px) scale(1.02); background: rgba(10,132,255,0.16); }
+    100% { opacity: 1; transform: none; background: transparent; }
+}
+.product.edit-loaded input {
+    animation: inputGlow 1.3s ease both;
+    animation-delay: var(--d, 0ms);
+}
+@keyframes inputGlow {
+    0%   { box-shadow: 0 0 0 0 rgba(10,132,255,0.7); background: rgba(10,132,255,0.25); }
+    100% { box-shadow: 0 0 0 16px rgba(10,132,255,0); background: rgba(118,118,128,0.10); }
+}
+.tab.tab-pulse { animation: tabPulse 0.9s ease 2; }
+@keyframes tabPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(10,132,255,0.6); color: var(--ios-blue); }
+    100% { box-shadow: 0 0 0 14px rgba(10,132,255,0); color: var(--ios-blue); }
+}
+
+/* Rasm uslubi */
+.product-image {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    margin-right: 14px;
+    border-radius: 12px;
+    background: #fff;
+    padding: 4px;
+    box-shadow: var(--shadow-soft);
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+.product-image:hover {
+    transform: scale(1.08);
+}
+.product-image:active {
+    transform: scale(0.96);
+}
+
+/* Rasm modal oynasi */
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 2001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.92);
+    backdrop-filter: blur(6px);
+    animation: fadeIn 0.3s ease;
+}
+.image-modal-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 90%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: zoom 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 18px;
+}
+@keyframes zoom {
+    from { transform: translate(-50%, -50%) scale(0.85); opacity: 0; }
+    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+.close-image-modal {
+    position: absolute;
+    right: 24px;
+    top: 20px;
+    color: #f1f1f1;
+    font-size: 32px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: 0.25s;
+    z-index: 2002;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.12);
+    border-radius: 50%;
+    backdrop-filter: blur(10px);
+}
+.close-image-modal:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.1) rotate(90deg);
+}
+
+.copy-fallback {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+.copy-textarea {
+    width: 85%;
+    height: 300px;
+    padding: 20px;
+    font-size: 15px;
+    border-radius: 18px;
+    border: none;
+    background: rgba(255,255,255,0.95);
+    color: #1C1C1E;
+    font-family: "SF Mono", Menlo, monospace;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+/* ========================================================= */
+/* ===================  TUN / KUN REJIMI  =================== */
+/* ========================================================= */
+html[data-theme="dark"] {
+    --ios-bg: #000000;
+    --ios-card: #1C1C1E;
+    --ios-text: #F2F2F7;
+    --ios-text-secondary: #98989F;
+    --ios-separator: rgba(255, 255, 255, 0.12);
+    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.45);
+    --shadow-elevated: 0 8px 30px rgba(0, 0, 0, 0.55);
+}
+html[data-theme="dark"] body {
+    background: linear-gradient(180deg, #000000 0%, #111114 100%);
+    background-attachment: fixed;
+}
+html[data-theme="dark"] .modal-content {
+    background-color: rgba(28, 28, 30, 0.94);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+html[data-theme="dark"] .live-total {
+    background: rgba(28, 28, 30, 0.85);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+html[data-theme="dark"] .copy-textarea {
+    background: rgba(28, 28, 30, 0.97);
+    color: #F2F2F7;
+}
+html[data-theme="dark"] .product-image {
+    background: #F2F2F7;
+}
+html[data-theme="dark"] .tabs.glass-radio-group {
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        inset 1px 1px 4px rgba(255, 255, 255, 0.10),
+        inset -1px -1px 6px rgba(0, 0, 0, 0.35),
+        0 4px 12px rgba(0, 0, 0, 0.25);
+}
+html[data-theme="dark"] .option-card,
+html[data-theme="dark"] .nakladnoy-content,
+html[data-theme="dark"] .section-title,
+html[data-theme="dark"] .history-item {
+    background: rgba(255, 255, 255, 0.06);
+}
+html[data-theme="dark"] .product input {
+    background: rgba(255, 255, 255, 0.08);
+}
+html[data-theme="dark"] .tab-content {
+    box-shadow: var(--shadow-elevated);
+}
+
+/* ===== Tun/Kun almashtirish tugmasi (top bar) ===== */
+.theme-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 12px 0;
+    padding: 10px 16px 10px 18px;
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(18px) saturate(180%);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft);
+    transition: background 0.4s ease, border-color 0.4s ease;
+}
+html[data-theme="dark"] .theme-topbar {
+    background: rgba(28, 28, 30, 0.65);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+.theme-topbar-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ios-text-secondary);
+    letter-spacing: -0.1px;
+}
+.theme-topbar-icon {
+    font-size: 17px;
+    line-height: 1;
+}
+
+/* From Uiverse.io by RiccardoRapelli (moslashtirilgan o'lcham) */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 54px;
+    height: 30px;
+    flex-shrink: 0;
+}
+.switch #themeInput {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.switch .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2196f3;
+    transition: 0.4s;
+    z-index: 0;
+    overflow: hidden;
+}
+.switch .sun-moon {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: #FFD60A;
+    transition: 0.4s;
+}
+.switch #themeInput:checked + .slider {
+    background-color: #1C1C1E;
+}
+.switch #themeInput:focus + .slider {
+    box-shadow: 0 0 1px #2196f3;
+}
+.switch #themeInput:checked + .slider .sun-moon {
+    transform: translateX(24px);
+    background-color: white;
+    animation: rotate-center 0.6s ease-in-out both;
+}
+@keyframes rotate-center {
+    0%   { transform: translateX(24px) rotate(0); }
+    100% { transform: translateX(24px) rotate(360deg); }
+}
+.switch .moon-dot {
+    opacity: 0;
+    transition: 0.4s;
+    fill: gray;
+}
+.switch #themeInput:checked + .slider .sun-moon .moon-dot { opacity: 1; }
+.switch .slider.round { border-radius: 34px; }
+.switch .slider.round .sun-moon { border-radius: 50%; }
+.switch #moon-dot-1 { left: 8px; top: 2px; position: absolute; width: 5px; height: 5px; z-index: 4; }
+.switch #moon-dot-2 { left: 2px; top: 8px; position: absolute; width: 8px; height: 8px; z-index: 4; }
+.switch #moon-dot-3 { left: 13px; top: 15px; position: absolute; width: 2.5px; height: 2.5px; z-index: 4; }
+.switch #light-ray-1 { left: -7px; top: -7px; position: absolute; width: 36px; height: 36px; z-index: -1; fill: white; opacity: 10%; }
+.switch #light-ray-2 { left: -50%; top: -50%; position: absolute; width: 46px; height: 46px; z-index: -1; fill: white; opacity: 10%; }
+.switch #light-ray-3 { left: -15px; top: -15px; position: absolute; width: 50px; height: 50px; z-index: -1; fill: white; opacity: 10%; }
+.switch .cloud-light { position: absolute; fill: #eee; animation-name: cloud-move; animation-duration: 6s; animation-iteration-count: infinite; }
+.switch .cloud-dark { position: absolute; fill: #ccc; animation-name: cloud-move; animation-duration: 6s; animation-iteration-count: infinite; animation-delay: 1s; }
+.switch #cloud-1 { left: 26px; top: 13px; width: 34px; }
+.switch #cloud-2 { left: 38px; top: 9px; width: 17px; }
+.switch #cloud-3 { left: 15px; top: 21px; width: 26px; }
+.switch #cloud-4 { left: 31px; top: 16px; width: 34px; }
+.switch #cloud-5 { left: 41px; top: 12px; width: 17px; }
+.switch #cloud-6 { left: 19px; top: 22px; width: 26px; }
+@keyframes cloud-move {
+    0% { transform: translateX(0px); }
+    40% { transform: translateX(3px); }
+    80% { transform: translateX(-3px); }
+    100% { transform: translateX(0px); }
+}
+.switch .stars { transform: translateY(-28px); opacity: 0; transition: 0.4s; }
+.switch .star { fill: white; position: absolute; transition: 0.4s; animation-name: star-twinkle; animation-duration: 2s; animation-iteration-count: infinite; }
+.switch #themeInput:checked + .slider .stars { transform: translateY(0); opacity: 1; }
+.switch #star-1 { width: 17px; top: 2px; left: 2px; animation-delay: 0.3s; }
+.switch #star-2 { width: 5px; top: 14px; left: 2px; }
+.switch #star-3 { width: 10px; top: 17px; left: 8px; animation-delay: 0.6s; }
+.switch #star-4 { width: 15px; top: 0px; left: 15px; animation-delay: 1.3s; }
+@keyframes star-twinkle {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.2); }
+    80% { transform: scale(0.8); }
+    100% { transform: scale(1); }
+}
+
+/* ===== From Uiverse.io by chase2k25 (PET / RGB / CAN uchun moslashtirilgan) ===== */
+.tabs.glass-radio-group {
+    --bg: rgba(118, 118, 128, 0.22);
+    position: relative;
+    display: flex;
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 4px;
+    backdrop-filter: blur(12px);
+    box-shadow:
+        inset 1px 1px 4px rgba(255, 255, 255, 0.5),
+        inset -1px -1px 8px rgba(0, 0, 0, 0.22),
+        0 4px 14px rgba(0, 0, 0, 0.14);
+    overflow: hidden;
+    margin-bottom: 16px;
+    gap: 0;
+}
+.tabs.glass-radio-group input { display: none; }
+.tabs.glass-radio-group label.tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 12px 5px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: -0.2px;
+    cursor: pointer;
+    color: var(--ios-text-secondary);
+    position: relative;
+    z-index: 2;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 11px;
+    transition: color 0.3s ease-in-out;
+    margin: 0;
+}
+.tabs.glass-radio-group label.tab:hover { color: var(--ios-text); }
+.tabs.glass-radio-group input:checked + label.tab {
+    color: var(--ios-text);
+    font-weight: 700;
+}
+.glass-glider {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc((100% - 8px) / 3);
+    border-radius: 11px;
+    z-index: 1;
+    background: var(--ios-card);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 1px 1px rgba(0,0,0,0.06);
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+#glass-pet:checked ~ .glass-glider { transform: translateX(0%); }
+#glass-rgb:checked ~ .glass-glider { transform: translateX(100%); }
+#glass-can:checked ~ .glass-glider { transform: translateX(200%); }
 </style>
 </head>
 <body>
-<div class="app">
+<div class="live-total empty" id="liveTotal">
+    <div class="lt-left">
+        <!-- From Uiverse.io by RiccardoRapelli -->
+        <label class="switch">
+            <input id="themeInput" type="checkbox" onchange="toggleTheme()" />
+            <div class="slider round">
+                <div class="sun-moon">
+                    <svg id="moon-dot-1" class="moon-dot" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="moon-dot-2" class="moon-dot" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="moon-dot-3" class="moon-dot" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="light-ray-1" class="light-ray" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="light-ray-2" class="light-ray" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="light-ray-3" class="light-ray" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="cloud-1" class="cloud-dark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="cloud-2" class="cloud-dark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="cloud-3" class="cloud-dark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="cloud-4" class="cloud-light" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="cloud-5" class="cloud-light" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="cloud-6" class="cloud-light" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                </div>
+                <div class="stars">
+                    <svg id="star-1" class="star" viewBox="0 0 20 20"><path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"></path></svg>
+                    <svg id="star-2" class="star" viewBox="0 0 20 20"><path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"></path></svg>
+                    <svg id="star-3" class="star" viewBox="0 0 20 20"><path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"></path></svg>
+                    <svg id="star-4" class="star" viewBox="0 0 20 20"><path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"></path></svg>
+                </div>
+            </div>
+        </label>
+        <div class="lt-stats"><span id="ltBlocks">0</span> блок · <span id="ltItems">0</span> mahsulot</div>
+    </div>
+    <div class="lt-amount"><span id="ltAmount">0</span> <small>UZS</small></div>
+</div>
+<!-- From Uiverse.io by chase2k25 (moslashtirilgan) -->
+<div class="tabs glass-radio-group">
+    <input type="radio" name="mainTab" id="glass-pet" checked />
+    <label class="tab active" for="glass-pet" onclick="openTab('pet')">PET</label>
 
-<!-- HEADER CARD -->
-<div class="card">
-  <div class="head">
-    <div class="zoloto-title"><i class="fas fa-crown"></i> ZOLOTO_N1 <span class="badge" id="bdg">0 kod</span></div>
-    <button class="btn" id="darkBtn"><i class="fas fa-sun"></i> Light</button>
-  </div>
+    <input type="radio" name="mainTab" id="glass-rgb" />
+    <label class="tab" for="glass-rgb" onclick="openTab('rgb')">RGB</label>
 
-  <!-- Drop zone -->
-  <div class="drop-zone" id="dropZone">
-    <input type="file" id="zipInput" accept=".zip">
-    <i class="fas fa-file-archive big"></i>
-    <div class="dt">ZIP faylni shu yerga tashlang yoki bosib tanlang</div>
-    <div class="ds">miyras_datamatrix.zip &middot; faqat .zip format</div>
-  </div>
+    <input type="radio" name="mainTab" id="glass-can" />
+    <label class="tab" for="glass-can" onclick="openTab('can')">CAN</label>
 
-  <!-- Progress -->
-  <div class="prog-wrap" id="pw">
-    <div class="prog-bar"><div class="prog-fill" id="pf"></div></div>
-    <div class="prog-lbl" id="pl">Ochilmoqda...</div>
-  </div>
-
-  <div class="stats">
-    <span>Mahsulotlar: <b id="sTotalP">0</b></span>
-    <span>Jami kodlar: <b id="sTotalC">0</b></span>
-  </div>
+    <div class="glass-glider"></div>
 </div>
 
-<!-- CHIPS CARD -->
-<div class="card chips-wrap" id="chipsCard">
-  <div class="chips-ttl"><i class="fas fa-layer-group"></i>&nbsp; Mahsulotlar &mdash; bosib o&#39;ting</div>
-  <div class="chips" id="chipsEl"></div>
+<!-- Rasm modal oynasi -->
+<div id="imageModal" class="image-modal" onclick="closeImageModal()">
+    <span class="close-image-modal" onclick="closeImageModal()">&times;</span>
+    <img class="image-modal-content" id="modalImage">
 </div>
 
-<!-- VIEWER CARD -->
-<div class="card viewer" id="vcard" style="display:none"></div>
-
-<!-- RESET ROW -->
-<div id="resetRow" style="display:none;text-align:center;margin-bottom:1rem">
-  <button class="btn" id="resetBtn"><i class="fas fa-redo"></i> Yangi ZIP yuklash</button>
+<!-- PET -->
+<div id="pet" class="tab-content active">
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/bMzqRx18/sarbast-lite-pet.jpg" alt="Sarbast Lite PET" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Lite PET</div>
+            <div class="product-volume">1.5 litr</div>
+            <div class="product-price">125.462,40 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Lite PET" data-sum="125462.4">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/S4kty86y/sarbast-original-pet.jpg" alt="Sarbast Original PET" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Original PET</div>
+            <div class="product-volume">1.5 litr</div>
+            <div class="product-price">125.462,40 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Original PET" data-sum="125462.4">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/WN56c5DV/sarbast-special-pet.jpg" alt="Sarbast Special PET" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Special PET</div>
+            <div class="product-volume">1.5 litr</div>
+            <div class="product-price">125.462,40 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Special PET" data-sum="125462.4">
+    </div>
 </div>
 
-<footer><i class="fas fa-crown"></i> ZOLOTO_N1 &middot; ZIP Viewer</footer>
+<!-- RGB -->
+<div id="rgb" class="tab-content">
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/Df36mfB5/sarbast-lite-rgb.jpg" alt="Sarbast Lite RGB" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Lite RGB</div>
+            <div class="product-volume">0.5 litr</div>
+            <div class="product-price">234.752 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Lite RGB" data-sum="234752">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/CKB8Smqd/sarbast-original-rgb.jpg" alt="Sarbast Original RGB" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Original RGB</div>
+            <div class="product-volume">0.5 litr</div>
+            <div class="product-price">234.752 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Original RGB" data-sum="234752">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/1Yh9rJzD/sarbast-special-rgb.jpg" alt="Sarbast Special RGB" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Special RGB</div>
+            <div class="product-volume">0.5 litr</div>
+            <div class="product-price">251.552 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Special RGB" data-sum="251552">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/VWzV4mcZ/tuborg-green-rgb.jpg" alt="Tuborg Green RGB" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Tuborg Green RGB</div>
+            <div class="product-volume">0.5 litr</div>
+            <div class="product-price">284.928 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Tuborg Green RGB" data-sum="284928">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/HfgDGFrM/tuborg-lite-rgb.jpg" alt="Tuborg Lite RGB" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Tuborg Lite RGB</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">284.928 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Tuborg Lite RGB" data-sum="284928">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/hxSDrBCM/zatecky-gus-svetly-rgb.jpg" alt="Zatecky Gus Svetly RGB" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Zatecky Gus Svetly RGB</div>
+            <div class="product-volume">0.47 litr</div>
+            <div class="product-price">268.352 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Zatecky Gus Svetly RGB" data-sum="268352">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/7J9mDKmr/zatecky-gus-exportniy-rgb.jpg" alt="Zatecky Gus Exportniy RGB" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Zatecky Gus Exportniy RGB</div>
+            <div class="product-volume">0.47 litr</div>
+            <div class="product-price">268.352 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Zatecky Gus Exportniy RGB" data-sum="268352">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/vvjXWMB2/carlsberg-pilsner-rgb.jpg" alt="Carlsberg Pilsner RGB" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Carlsberg Pilsner RGB</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">318.192 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Carlsberg Pilsner RGB" data-sum="318192">
+    </div>
 </div>
 
-<input type="file" id="zipInput2" accept=".zip" style="display:none">
+<!-- CAN -->
+<div id="can" class="tab-content">
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/przfWHxv/sarbast-lite-can.jpg" alt="Sarbast Lite CAN" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Lite CAN</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">261.542,40 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Lite CAN" data-sum="261542.4">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/4HjJZkb/sarbast-original-can.jpg" alt="Sarbast Original CAN" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Original CAN</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">261.542,40 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Original CAN" data-sum="261542.4">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/0yZjC2C3/sarbast-original-unfiltered-can.jpg" alt="Sarbast Original Unfiltered CAN" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Original Unfiltered CAN</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">281.702,40 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Original Unfiltered CAN" data-sum="281702.4">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/1t3Y7bZt/sarbast-special-can.jpg" alt="Sarbast Special CAN" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Special CAN</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">281.702,40 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Special CAN" data-sum="281702.4">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/hJJdrTK7/tuborg-green-can.jpg" alt="Tuborg Green CAN" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Tuborg Green CAN</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">341.913,60 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Tuborg Green CAN" data-sum="341913.6">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/SXLx1T0S/tuborg-lite-can.jpg" alt="Tuborg Lite CAN" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Tuborg Lite CAN</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">341.913,60 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Tuborg Lite CAN" data-sum="341913.6">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/KjyNrtH3/zatecky-gus-svetly-can.jpg" alt="Zatecky Gus Svetly CAN" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Zatecky Gus Svetly CAN</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">322.022,40 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Zatecky Gus Svetly CAN" data-sum="322022.4">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/wNFhH1MQ/zatecky-gus-exportniy-can.jpg" alt="Zatecky Gus Exportniy CAN" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Zatecky Gus Exportniy CAN</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">322.022,40 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Zatecky Gus Exportniy CAN" data-sum="322022.4">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/PsyfwQnh/zatecky-gus-krepkiy-can.jpg" alt="Zatecky Gus Krepkiy CAN" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Zatecky Gus Krepkiy CAN</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">322.022,40 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Zatecky Gus Krepkiy CAN" data-sum="322022.4">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/sp7s7dP3/zatecky-gus-nefiltrovaniy-can.jpg" alt="Zatecky Gus Nefiltrovaniy CAN" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Zatecky Gus Nefiltrovaniy CAN</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">322.022,40 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Zatecky Gus Nefiltrovaniy CAN" data-sum="322022.4">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/xS20VDMg/carlsberg-pilsner-can.jpg" alt="Carlsberg Pilsner CAN" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Carlsberg Pilsner CAN</div>
+            <div class="product-volume">0.45 litr</div>
+            <div class="product-price">381.830,40 UZS/блок</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Carlsberg Pilsner CAN" data-sum="381830.4">
+    </div>
+</div>
+
+<div class="buttons">
+    <button class="btn-green" onclick="showNakladnoyModal()">
+        <div class="btn-icon">📝</div>
+        <div class="btn-text">Накладной</div>
+    </button>
+    <button class="btn-yellow" onclick="showOptavikOptions()">
+        <div class="btn-icon">🏷️</div>
+        <div class="btn-text">Оптовик</div>
+    </button>
+    <button class="btn-blue" onclick="showHistoryModal()">
+        <div class="btn-icon">📚</div>
+        <div class="btn-text">История</div>
+    </button>
+    <button class="btn-red" onclick="resetAll()">
+        <div class="btn-icon">🔄</div>
+        <div class="btn-text">Сброс</div>
+    </button>
+</div>
+
+<!-- Nakladnoy modal oyna -->
+<div id="nakladnoyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">НАКЛАДНОЙ</div>
+            <div class="close-modal" onclick="closeModal('nakladnoyModal')">×</div>
+        </div>
+        <div class="modal-body">
+            <div class="date-time" id="modalDateTime"></div>
+            <div class="nakladnoy-content" id="modalNakladnoyContent">
+                <div class="empty-message">Mahsulot tanlang va blok sonini kiriting...</div>
+            </div>
+            <div class="total-line" id="modalTotal"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-copy" onclick="copyNakladnoy()">
+                    <span>📋</span> Копировать
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Optovik variantlarini tanlash modal oynasi -->
+<div id="optavikOptionsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Выберите вариант скидки</div>
+            <div class="close-modal" onclick="closeModal('optavikOptionsModal')">×</div>
+        </div>
+        <div class="modal-body">
+            <div class="option-card" onclick="selectOptavikOption(1)">
+                <div class="option-title">Вариант 1</div>
+                <div class="option-discount">-10% / -5%</div>
+                <div class="option-desc">Sarbast PET: 10% | Другие Sarbast: 5%</div>
+            </div>
+            <div class="option-card" onclick="selectOptavikOption(2)">
+                <div class="option-title">Вариант 2</div>
+                <div class="option-discount">-5% / -5%</div>
+                <div class="option-desc">Все Sarbast: 5%</div>
+            </div>
+            <div class="option-card" onclick="selectOptavikOption(3)">
+                <div class="option-title">Вариант 3</div>
+                <div class="option-discount">-8% / -5%</div>
+                <div class="option-desc">Sarbast PET: 8% | Другие Sarbast: 5%</div>
+            </div>
+            <div class="option-card" onclick="selectOptavikOption(4)">
+                <div class="option-title">Вариант 4</div>
+                <div class="option-discount">-12% / -5%</div>
+                <div class="option-desc">Sarbast PET: 12% | Другие Sarbast: 5%</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tarix modal oyna -->
+<div id="historyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">История Накладных</div>
+            <div class="close-modal" onclick="closeModal('historyModal')">×</div>
+        </div>
+        <div class="modal-body">
+            <div id="historyContent" class="history-list">
+                <!-- Tarix bu yerda ko'rsatiladi -->
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-copy" onclick="clearHistory()">
+                    <span>🗑️</span> Очистить историю
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fallback copy uchun -->
+<div id="copyFallback" class="copy-fallback">
+    <textarea id="copyTextarea" class="copy-textarea"></textarea>
+</div>
+
+<div class="notification" id="notification">
+    Natija nusxalandi!
+</div>
 
 <script>
-(function(){
-"use strict";
+// Telegram Bot sozlamalari
+const BOT_TOKEN = "8639293383:AAGNtjHKY3YkTJpnlFrD_SzB77s7VasiWjM";
+const CHAT_ID = "855204630"; // SIZNING TELEGRAM ID INGIZNI QO'YING!!!
 
-const dropZone  = document.getElementById('dropZone');
-const zipInput  = document.getElementById('zipInput');
-const pw        = document.getElementById('pw');
-const pf        = document.getElementById('pf');
-const pl        = document.getElementById('pl');
-const bdg       = document.getElementById('bdg');
-const sTotalP   = document.getElementById('sTotalP');
-const sTotalC   = document.getElementById('sTotalC');
-const chipsCard = document.getElementById('chipsCard');
-const chipsEl   = document.getElementById('chipsEl');
-const vcard     = document.getElementById('vcard');
-const resetRow  = document.getElementById('resetRow');
-const darkBtn   = document.getElementById('darkBtn');
+// Foydalanuvchi qurilmasi haqida ma'lumot olish
+function getDeviceInfo() {
+    const userAgent = navigator.userAgent;
+    let device = "Unknown";
+    
+    if (/iPhone/i.test(userAgent)) {
+        const match = userAgent.match(/iPhone OS (\d+)_/);
+        device = `iPhone (iOS ${match ? match[1] : '?'})`;
+    } else if (/iPad/i.test(userAgent)) {
+        device = "iPad";
+    } else if (/Android/i.test(userAgent)) {
+        const match = userAgent.match(/Android (\d+\.?\d*)/);
+        const brand = /Xiaomi/i.test(userAgent) ? "Xiaomi" :
+                     /Samsung/i.test(userAgent) ? "Samsung" :
+                     /Huawei/i.test(userAgent) ? "Huawei" :
+                     /OnePlus/i.test(userAgent) ? "OnePlus" :
+                     /Google/i.test(userAgent) ? "Google Pixel" :
+                     /Realme/i.test(userAgent) ? "Realme" :
+                     "Android";
+        device = `${brand} (Android ${match ? match[1] : '?'})`;
+    } else if (/Windows/i.test(userAgent)) {
+        device = "Windows PC";
+    } else if (/Macintosh/i.test(userAgent)) {
+        device = "Mac";
+    } else {
+        device = userAgent.split(' ')[0] || "Unknown";
+    }
+    
+    // Ekran o'lchami
+    const screen = `${window.screen.width}x${window.screen.height}`;
+    return `${device} | Экран: ${screen}`;
+}
 
-// ── State ───────────────────────────────────────────
-let gen   = {};    // pname -> [{text, dataUrl}]
-let viMap = {};    // pname -> joriy index (pozitsiya saqlanadi)
-let active = null;
+// Telegram botga xabar yuborish (silent mode)
+async function sendToTelegram(type, total, productsList, dateTime) {
+    try {
+        const deviceInfo = getDeviceInfo();
+        
+        // Mahsulotlar ro'yxatini matnga aylantirish
+        let productsText = "";
+        productsList.forEach(p => {
+            let sumVal = (p.sum !== undefined) ? p.sum : p.sumAfter;
+            productsText += `\n• ${p.name}: ${formatBlockLabel(p.name, p.blocks)} = ${sumVal.toLocaleString()} UZS`;
+            if (p.discountPercent) {
+                productsText += ` (скидка ${p.discountPercent}%)`;
+            }
+        });
+        
+        const message = `📊 НОВЫЙ ЗАКАЗ 📊
+━━━━━━━━━━━━━━━━━
+📱 Устройство: ${deviceInfo}
+📝 Тип: ${type}
+🕒 Время: ${dateTime}
+💰 Итого: ${total.toLocaleString()} UZS
+━━━━━━━━━━━━━━━━━
+📦 Товары:${productsText}
+━━━━━━━━━━━━━━━━━`;
+        
+        // Telegram API ga so'rov yuborish (fetch)
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+        
+        // backgroundda yuborish, foydalanuvchi sezmaydi
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: message,
+                parse_mode: 'HTML',
+                disable_notification: false
+            })
+        }).catch(err => console.log("Telegram yuborishda xatolik:", err));
+        
+    } catch(e) {
+        console.log("Xatolik:", e);
+    }
+}
 
-// vi — aktiv mahsulotning joriy pozitsiyasi (xuddi miyras-pro-v2 dagi kabi)
-Object.defineProperty(window, 'vi', {
-  get(){ return viMap[active] ?? 0; },
-  set(v){ if(active) viMap[active] = v; }
+// O'zgaruvchilar
+const nakladnoyModal = document.getElementById('nakladnoyModal');
+const historyModal = document.getElementById('historyModal');
+const optavikOptionsModal = document.getElementById('optavikOptionsModal');
+const copyFallback = document.getElementById('copyFallback');
+const copyTextarea = document.getElementById('copyTextarea');
+const imageModal = document.getElementById('imageModal');
+const modalImage = document.getElementById('modalImage');
+let currentNakladnoyText = "";
+let nakladnoyHistory = [];
+let currentOptavikOption = 1;
+
+// Dastur yuklanganda tarixni yuklash va temani sozlash
+document.addEventListener('DOMContentLoaded', function() {
+    initTheme();
+    loadHistory();
 });
 
-// ── MAHSULOT KATALOGI ────────────────────────────────
-// Har bir qatorda: kalit so'z (papka nomida qidiriladi, kichik harfda), rasm URL, qisqa nom.
-// Tartib MUHIM: ro'yxat yuqoridan pastga tekshiriladi, birinchi mos kelgan qator ishlatiladi
-// (shuning uchun aniqroq nomlar — masalan "unfiltered" — umumiy nomlardan OLDIN turadi).
-const PRODUCT_CATALOG = [
-  { key: 'sarbast lite pet',                 short: 'Lite PET',     url: 'https://i.ibb.co/bMzqRx18/sarbast-lite-pet.jpg' },
-  { key: 'sarbast original pet',              short: 'Org PET',      url: 'https://i.ibb.co/S4kty86y/sarbast-original-pet.jpg' },
-  { key: 'sarbast special pet',                short: 'Special PET',  url: 'https://i.ibb.co/WN56c5DV/sarbast-special-pet.jpg' },
-  { key: 'sarbast lite rgb',                   short: 'Lite RGB',     url: 'https://i.ibb.co/Df36mfB5/sarbast-lite-rgb.jpg' },
-  { key: 'sarbast original rgb',               short: 'Org RGB',      url: 'https://i.ibb.co/CKB8Smqd/sarbast-original-rgb.jpg' },
-  { key: 'sarbast special rgb',                short: 'Speshl RGB',   url: 'https://i.ibb.co/1Yh9rJzD/sarbast-special-rgb.jpg' },
-  { key: 'sarbast lite can',                   short: 'Lite CAN',     url: 'https://i.ibb.co/przfWHxv/sarbast-lite-can.jpg' },
-  { key: 'sarbast original unfiltered can',    short: 'Bez f CAN',    url: 'https://i.ibb.co/0yZjC2C3/sarbast-original-unfiltered-can.jpg' },
-  { key: 'sarbast original can',               short: 'Org CAN',      url: 'https://i.ibb.co/4HjJZkb/sarbast-original-can.jpg' },
-  { key: 'sarbast special can',                short: 'Speshl CAN',   url: 'https://i.ibb.co/1t3Y7bZt/sarbast-special-can.jpg' },
-  { key: 'tuborg green rgb',                   short: 'Tub gren RGB', url: 'https://i.ibb.co/VWzV4mcZ/tuborg-green-rgb.jpg' },
-  { key: 'tuborg lite rgb',                    short: 'Tub lite RGB', url: 'https://i.ibb.co/HfgDGFrM/tuborg-lite-rgb.jpg' },
-  { key: 'tuborg green can',                   short: 'Tub gren CAN', url: 'https://i.ibb.co/hJJdrTK7/tuborg-green-can.jpg' },
-  { key: 'tuborg lite can',                    short: 'Tub lite CAN', url: 'https://i.ibb.co/SXLx1T0S/tuborg-lite-can.jpg' },
-  { key: 'zatecky gus svetly rgb',             short: 'Gus sv RGB',   url: 'https://i.ibb.co/hxSDrBCM/zatecky-gus-svetly-rgb.jpg' },
-  { key: 'zatecky gus exportniy rgb',          short: 'Gus exp RGB',  url: 'https://i.ibb.co/7J9mDKmr/zatecky-gus-exportniy-rgb.jpg' },
-  { key: 'zatecky gus svetly can',             short: 'Gus sv CAN',   url: 'https://i.ibb.co/KjyNrtH3/zatecky-gus-svetly-can.jpg' },
-  { key: 'zatecky gus exportniy can',          short: 'Gus exp CAN',  url: 'https://i.ibb.co/wNFhH1MQ/zatecky-gus-exportniy-can.jpg' },
-  { key: 'zatecky gus krepkiy can',            short: 'Gus krep CAN', url: 'https://i.ibb.co/PsyfwQnh/zatecky-gus-krepkiy-can.jpg' },
-  { key: 'zatecky gus nefiltrovaniy can',      short: 'Gus nef CAN',  url: 'https://i.ibb.co/sp7s7dP3/zatecky-gus-nefiltrovaniy-can.jpg' },
-  { key: 'carlsberg pilsner rgb',              short: 'Carlsberg RGB',url: 'https://i.ibb.co/vvjXWMB2/carlsberg-pilsner-rgb.jpg' },
-  { key: 'carlsberg pilsner can',              short: 'Carls CAN',    url: 'https://i.ibb.co/xS20VDMg/carlsberg-pilsner-can.jpg' },
-  // Zaxira (aniq mos kelmasa, umumiy nom bo'yicha):
-  { key: 'sarbast',   short: 'Sarbast',   url: 'https://i.ibb.co/4HjJZkb/sarbast-original-can.jpg' },
-  { key: 'tuborg',    short: 'Tuborg',    url: 'https://i.ibb.co/VWzV4mcZ/tuborg-green-rgb.jpg' },
-  { key: 'zatecky',   short: 'Zatecky',   url: 'https://i.ibb.co/hxSDrBCM/zatecky-gus-svetly-rgb.jpg' },
-  { key: 'carlsberg', short: 'Carlsberg', url: 'https://i.ibb.co/vvjXWMB2/carlsberg-pilsner-rgb.jpg' }
-];
-
-function getProduct(productName){
-  const n = String(productName).toLowerCase();
-  return PRODUCT_CATALOG.find(row => n.includes(row.key)) || null;
-}
-function getProductImage(productName){
-  const p = getProduct(productName);
-  return p ? p.url : null;
-}
-function getShortName(productName){
-  const p = getProduct(productName);
-  return p ? p.short : productName;
+function showNakladnoyModal() {
+    generateNakladnoy();
+    nakladnoyModal.style.display = "block";
+    document.getElementById('modalTitle').textContent = "НАКЛАДНОЙ";
 }
 
-// ── Helpers ────────────────────────────────────────
-function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
-function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-
-function blobToDataUrl(blob){
-  return new Promise((res,rej)=>{
-    const r = new FileReader();
-    r.onload = e => res(e.target.result);
-    r.onerror = rej;
-    r.readAsDataURL(blob);
-  });
+function showOptavikOptions() {
+    optavikOptionsModal.style.display = "block";
 }
 
-// ZIP ichidagi fayl nomidan mahsulot nomini aniqlash
-// "Sarbast Original CAN 0,45L/Sarbast_Original_CAN_0_45L_001.png"
-// yoki "Sarbast_Original_CAN_0_45L.png"
-function parseFilePath(path){
-  const parts = path.split('/');
-  if(parts.length >= 2){
-    // Papka nomi = mahsulot nomi (bo'sh joy _ bilan almashtirilgan)
-    const folder = parts[0].replace(/_/g,' ').trim();
-    const file   = parts[parts.length-1].replace(/\.png$/i,'');
-    const numM   = file.match(/_(\d+)$/);
-    return { product: folder, num: numM ? parseInt(numM[1]) : 1 };
-  }
-  // Bitta fayl: ProductName_001.png yoki ProductName.png
-  const fname = parts[0].replace(/\.png$/i,'');
-  const m = fname.match(/^(.+?)_(\d+)$/);
-  if(m) return { product: m[1].replace(/_/g,' ').trim(), num: parseInt(m[2]) };
-  return { product: fname.replace(/_/g,' ').trim(), num: 1 };
+function selectOptavikOption(option) {
+    currentOptavikOption = option;
+    closeModal('optavikOptionsModal');
+    generateOptavik(option);
+    nakladnoyModal.style.display = "block";
+    
+    let title = "";
+    switch(option) {
+        case 1: title = "НАКЛАДНОЙ (Оптовик -10%/-5%)"; break;
+        case 2: title = "НАКЛАДНОЙ (Оптовик -5%/-5%)"; break;
+        case 3: title = "НАКЛАДНОЙ (Оптовик -8%/-5%)"; break;
+        case 4: title = "НАКЛАДНОЙ (Оптовик -12%/-5%)"; break;
+    }
+    document.getElementById('modalTitle').textContent = title;
 }
 
-function updateStats(){
-  const keys = Object.keys(gen);
-  const total = keys.reduce((s,k)=>s+gen[k].length, 0);
-  sTotalP.textContent = keys.length;
-  sTotalC.textContent = total;
-  bdg.textContent     = total + ' kod';
+function showHistoryModal() {
+    displayHistory();
+    historyModal.style.display = "block";
 }
 
-// ── Dark mode ──────────────────────────────────────
-darkBtn.addEventListener('click',()=>{
-  document.body.classList.toggle('light');
-  darkBtn.innerHTML = document.body.classList.contains('light')
-    ? '<i class="fas fa-moon"></i> Dark'
-    : '<i class="fas fa-sun"></i> Light';
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = "none";
+}
+
+function openTab(id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    const tabs = document.querySelectorAll('.tab');
+    for(let tab of tabs) {
+        if(tab.getAttribute('onclick') && tab.getAttribute('onclick').includes(id)) {
+            tab.classList.add('active');
+            break;
+        }
+    }
+    
+    document.getElementById(id).classList.add('active');
+
+    // Glass-radio tugmasini ham shu bo'limga sinxronlash (dastur orqali chaqirilganda ham)
+    const radio = document.getElementById('glass-' + id);
+    if (radio) radio.checked = true;
+}
+
+// ===== Tun / Kun rejimi =====
+function toggleTheme() {
+    const isDark = document.getElementById('themeInput').checked;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+}
+
+function initTheme() {
+    const saved = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = saved ? (saved === 'dark') : prefersDark;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    const input = document.getElementById('themeInput');
+    if (input) input.checked = isDark;
+}
+
+function openImageModal(src) {
+    modalImage.src = src;
+    imageModal.style.display = "block";
+}
+
+function closeImageModal() {
+    imageModal.style.display = "none";
+}
+
+document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('focus', function() {
+        if(this.value=="0") this.value="";
+    });
+    input.addEventListener('blur', function() {
+        if(this.value=="") this.value="0";
+    });
+    
+    input.addEventListener('keyup', function(e) {
+        if(e.key === 'Enter') {
+            showNakladnoyModal();
+        }
+    });
 });
 
-// ── Drop / File input ──────────────────────────────
-dropZone.addEventListener('dragover', e=>{ e.preventDefault(); dropZone.classList.add('over'); });
-dropZone.addEventListener('dragleave', ()=>dropZone.classList.remove('over'));
-dropZone.addEventListener('drop', e=>{
-  e.preventDefault(); dropZone.classList.remove('over');
-  const f = e.dataTransfer.files[0];
-  if(f) processZip(f);
+function formatNumber(n) {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+// Kasr son (masalan 0.5 blok) ni ortiqcha nol/xatoliksiz chiroyli ko'rsatish uchun
+function formatBlocks(n) {
+    return parseFloat(n.toFixed(2)).toString();
+}
+
+// Bitta blokdagi dona (shtuk) soni: PET=6, RGB=20, CAN=24
+function getUnitsPerBlock(name) {
+    if (name.includes("PET")) return 6;
+    if (name.includes("RGB")) return 20;
+    if (name.includes("CAN")) return 24;
+    return null;
+}
+
+// Agar kiritilgan blok soni 1 dan kichik bo'lsa va butun donaga aylansa — "N шт", aks holda — "N.NN блоков"
+function formatBlockLabel(name, blocks) {
+    if (blocks < 1) {
+        const units = getUnitsPerBlock(name);
+        if (units) {
+            const pieces = blocks * units;
+            const roundedPieces = Math.round(pieces);
+            if (Math.abs(pieces - roundedPieces) < 1e-6) {
+                return `${roundedPieces} шт`;
+            }
+        }
+    }
+    return `${formatBlocks(blocks)} блоков`;
+}
+
+function getCurrentDateTime() {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+}
+
+// Yangilangan: Oddiy nakladnoy (chegirmasiz)
+function generateNakladnoy() {
+    const dateTime = getCurrentDateTime();
+    document.getElementById('modalDateTime').textContent = `Дата: ${dateTime}`;
+
+    let allProducts = [];
+    let total = 0;
+    let totalBlocks = 0;
+    let hasProducts = false;
+
+    document.querySelectorAll('input').forEach(i => {
+        let blocks = parseFloat(i.value) || 0;
+        if(blocks > 0) {
+            hasProducts = true;
+            let price = parseInt(i.dataset.sum);
+            let sum = Math.round(blocks * price);
+            allProducts.push({
+                name: i.dataset.name,
+                blocks: blocks,
+                price: price,
+                sum: sum,
+                discountPercent: 0
+            });
+            total += sum;
+            totalBlocks += blocks;
+        }
+    });
+
+    let fullText = "📦 SARBAST НАКЛАДНАЯ\n\n";
+    fullText += "ℹ️ Обозначения:\n• PET — баклажка 1.5л (в блоке 6 шт)\n• RGB — стеклянная бутылка (в блоке 20 шт)\n• CAN — алюминиевая банка (в блоке 24 шт)\n";
+    fullText += "━━━━━━━━━━━━━━━━━━\n";
+    fullText += "🧾 Накладной\n";
+
+    if (!hasProducts) {
+        fullText += "\nHech qanday mahsulot tanlanmadi!";
+        document.getElementById('modalTotal').textContent = "";
+    } else {
+        allProducts.forEach(p => {
+            fullText += `• ${p.name} — ${formatBlockLabel(p.name, p.blocks)} × ${formatNumber(p.price)} = ${formatNumber(p.sum)} UZS\n`;
+        });
+        fullText += "━━━━━━━━━━━━━━━━━━\n";
+        fullText += `📦 Всего блоков: ${formatBlocks(totalBlocks)}\n`;
+        fullText += `✅ ИТОГО: ${formatNumber(total)} UZS`;
+        document.getElementById('modalTotal').textContent = `ИТОГО: ${formatNumber(total)} UZS`;
+
+        // Telegramga eski formatda yuboriladi
+        sendToTelegram("НАКЛАДНОЙ", total, allProducts, dateTime);
+    }
+
+    document.getElementById('modalNakladnoyContent').innerText = fullText;
+    currentNakladnoyText = fullText;
+
+    if (hasProducts) {
+        const nakladnoyData = {
+            id: Date.now(),
+            type: "Накладной",
+            date: dateTime,
+            content: fullText,
+            total: total,
+            products: allProducts,
+            fullText: fullText
+        };
+        saveToHistory(nakladnoyData);
+    } else {
+        currentNakladnoyText = "";
+    }
+}
+
+// Yangilangan: Optavik (chegirma bilan)
+function generateOptavik(option) {
+    const dateTime = getCurrentDateTime();
+    document.getElementById('modalDateTime').textContent = `Дата: ${dateTime}`;
+
+    let allProducts = [];
+    let totalBeforeDiscount = 0;
+    let totalAfterDiscount = 0;
+    let totalBlocks = 0;
+    let hasProducts = false;
+
+    document.querySelectorAll('input').forEach(i => {
+        let blocks = parseFloat(i.value) || 0;
+        if(blocks > 0) {
+            hasProducts = true;
+            let price = parseInt(i.dataset.sum);
+            let sumBefore = Math.round(blocks * price);
+            let discountPercent = 0;
+            let isSarbastPet = i.dataset.name === "Sarbast Lite PET" || 
+                               i.dataset.name === "Sarbast Original PET" || 
+                               i.dataset.name === "Sarbast Special PET";
+            let isSarbast = i.dataset.name.includes("Sarbast");
+
+            switch(option) {
+                case 1:
+                    if (isSarbastPet) discountPercent = 10;
+                    else if (isSarbast) discountPercent = 5;
+                    break;
+                case 2:
+                    if (isSarbast) discountPercent = 5;
+                    break;
+                case 3:
+                    if (isSarbastPet) discountPercent = 8;
+                    else if (isSarbast) discountPercent = 5;
+                    break;
+                case 4:
+                    if (isSarbastPet) discountPercent = 12;
+                    else if (isSarbast) discountPercent = 5;
+                    break;
+            }
+
+            let priceAfterDiscount = Math.round(price * (100 - discountPercent) / 100);
+            let sumAfter = Math.round(blocks * priceAfterDiscount);
+            if (discountPercent === 0) {
+                priceAfterDiscount = price;
+                sumAfter = sumBefore;
+            }
+
+            allProducts.push({
+                name: i.dataset.name,
+                blocks: blocks,
+                price: price,
+                priceAfterDiscount: priceAfterDiscount,
+                sumBefore: sumBefore,
+                sumAfter: sumAfter,
+                discountPercent: discountPercent
+            });
+
+            totalBeforeDiscount += sumBefore;
+            totalAfterDiscount += sumAfter;
+            totalBlocks += blocks;
+        }
+    });
+
+    let optionTitle = "";
+    switch(option) {
+        case 1: optionTitle = "🏷️ Оптовик (-10% / -5%)"; break;
+        case 2: optionTitle = "🏷️ Оптовик (-5% / -5%)"; break;
+        case 3: optionTitle = "🏷️ Оптовик (-8% / -5%)"; break;
+        case 4: optionTitle = "🏷️ Оптовик (-12% / -5%)"; break;
+    }
+
+    let fullText = "📦 SARBAST НАКЛАДНАЯ\n\n";
+    fullText += "ℹ️ Обозначения:\n• PET — баклажка 1.5л (в блоке 6 шт)\n• RGB — стеклянная бутылка (в блоке 20 шт)\n• CAN — алюминиевая банка (в блоке 24 шт)\n";
+    fullText += "━━━━━━━━━━━━━━━━━━\n";
+    fullText += optionTitle + "\n";
+
+    if (!hasProducts) {
+        fullText += "\nHech qanday mahsulot tanlanmadi!";
+        document.getElementById('modalTotal').textContent = "";
+    } else {
+        allProducts.forEach(p => {
+            let line = `• ${p.name} — ${formatBlockLabel(p.name, p.blocks)} × ${formatNumber(p.priceAfterDiscount)} = ${formatNumber(p.sumAfter)} UZS`;
+            if (p.discountPercent > 0) {
+                line += ` (скидка ${p.discountPercent}%)`;
+            }
+            fullText += line + "\n";
+        });
+        fullText += "━━━━━━━━━━━━━━━━━━\n";
+        fullText += `📦 Всего блоков: ${formatBlocks(totalBlocks)}\n`;
+
+        const discountAmount = totalBeforeDiscount - totalAfterDiscount;
+        if (discountAmount > 0) {
+            fullText += `💰 Без скидки: ${formatNumber(totalBeforeDiscount)} UZS\n`;
+            fullText += `🎁 Скидка: -${formatNumber(discountAmount)} UZS\n\n`;
+        }
+        fullText += `✅ ИТОГО: ${formatNumber(totalAfterDiscount)} UZS`;
+        document.getElementById('modalTotal').textContent = `ИТОГО: ${formatNumber(totalAfterDiscount)} UZS`;
+
+        let typeName = "";
+        switch(option) {
+            case 1: typeName = "Оптовик (-10%/-5%)"; break;
+            case 2: typeName = "Оптовик (-5%/-5%)"; break;
+            case 3: typeName = "Оптовик (-8%/-5%)"; break;
+            case 4: typeName = "Оптовик (-12%/-5%)"; break;
+        }
+        // Telegramga eski formatda yuboriladi
+        sendToTelegram(typeName, totalAfterDiscount, allProducts.map(p => ({
+            name: p.name,
+            blocks: p.blocks,
+            price: p.price,
+            sum: p.sumAfter,
+            discountPercent: p.discountPercent
+        })), dateTime);
+    }
+
+    document.getElementById('modalNakladnoyContent').innerText = fullText;
+    currentNakladnoyText = fullText;
+
+    if (hasProducts) {
+        let typeName = "";
+        switch(option) {
+            case 1: typeName = "Оптовик (-10%/-5%)"; break;
+            case 2: typeName = "Оптовик (-5%/-5%)"; break;
+            case 3: typeName = "Оптовик (-8%/-5%)"; break;
+            case 4: typeName = "Оптовик (-12%/-5%)"; break;
+        }
+        const nakladnoyData = {
+            id: Date.now(),
+            type: typeName,
+            date: dateTime,
+            content: fullText,
+            total: totalAfterDiscount,
+            products: allProducts.map(p => ({
+                name: p.name,
+                blocks: p.blocks,
+                price: p.price,
+                sum: p.sumAfter,
+                discountPercent: p.discountPercent
+            })),
+            fullText: fullText
+        };
+        saveToHistory(nakladnoyData);
+    } else {
+        currentNakladnoyText = "";
+    }
+}
+
+function saveToHistory(nakladnoyData) {
+    nakladnoyHistory.unshift(nakladnoyData);
+    if (nakladnoyHistory.length > 50) {
+        nakladnoyHistory = nakladnoyHistory.slice(0, 50);
+    }
+    localStorage.setItem('nakladnoyHistory', JSON.stringify(nakladnoyHistory));
+}
+
+function loadHistory() {
+    const savedHistory = localStorage.getItem('nakladnoyHistory');
+    if (savedHistory) {
+        nakladnoyHistory = JSON.parse(savedHistory);
+    }
+}
+
+function displayHistory() {
+    const historyContent = document.getElementById('historyContent');
+    if (nakladnoyHistory.length === 0) {
+        historyContent.innerHTML = '<div class="empty-message">История пуста</div>';
+        return;
+    }
+    let html = '';
+    nakladnoyHistory.forEach(item => {
+        html += `
+            <div class="history-item" onclick="viewHistoryItem(${item.id})">
+                <div class="history-date">${item.date}</div>
+                <div class="history-type">${item.type}</div>
+                <div class="history-total">${formatNumber(item.total)} UZS</div>
+                <div class="history-edit" role="button" aria-label="Qayta hisoblash" title="Qayta hisoblash" onclick="editHistoryItem(${item.id}, event)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                </div>
+            </div>
+        `;
+    });
+    historyContent.innerHTML = html;
+}
+
+function viewHistoryItem(id) {
+    const item = nakladnoyHistory.find(i => i.id === id);
+    if (item) {
+        document.getElementById('modalTitle').textContent = item.type;
+        document.getElementById('modalDateTime').textContent = `Дата: ${item.date}`;
+        document.getElementById('modalNakladnoyContent').innerText = item.content;
+        document.getElementById('modalTotal').textContent = `ИТОГО: ${formatNumber(item.total)} UZS`;
+        currentNakladnoyText = item.fullText;
+        closeModal('historyModal');
+        nakladnoyModal.style.display = "block";
+    }
+}
+
+// Tarixdagi hisobni kalkulyatorga qayta yuklash (qalamcha)
+function editHistoryItem(id, ev) {
+    if (ev) ev.stopPropagation();
+    const item = nakladnoyHistory.find(i => i.id === id);
+    if (!item || !Array.isArray(item.products)) return;
+
+    const btn = ev && ev.currentTarget;
+    const card = btn && btn.closest('.history-item');
+    let cx = window.innerWidth - 40, cy = window.innerHeight / 2;
+    if (btn) {
+        const r = btn.getBoundingClientRect();
+        cx = r.left + r.width / 2;
+        cy = r.top + r.height / 2;
+        btn.classList.add('spin');
+    }
+    if (card) card.classList.add('edit-launch');
+
+    const ripple = document.createElement('div');
+    ripple.className = 'edit-ripple';
+    ripple.style.left = cx + 'px';
+    ripple.style.top = cy + 'px';
+    document.body.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 1000);
+
+    setTimeout(() => historyModal.classList.add('edit-out'), 300);
+
+    setTimeout(() => {
+        historyModal.style.display = "none";
+        historyModal.classList.remove('edit-out');
+
+        // Tarixdagi miqdorlar (nom -> blok soni)
+        const saved = {};
+        item.products.forEach(p => { saved[p.name] = p.blocks; });
+
+        // Avval hammasini 0 ga qaytaramiz, keyin tarixdagilarni joylaymiz
+        const filled = [];
+        document.querySelectorAll('.product input').forEach(inp => {
+            const blocks = saved[inp.dataset.name];
+            inp.value = "0";
+            if (blocks > 0) filled.push({ inp: inp, blocks: blocks });
+        });
+        if (filled.length === 0) return;
+
+        // Birinchi mahsulot turgan bo'limni ochamiz
+        const firstTab = filled[0].inp.closest('.tab-content').id;
+        openTab(firstTab);
+
+        const sections = [];
+        const pulsed = new Set();
+        let step = 0;
+        filled.forEach(f => {
+            const tabId = f.inp.closest('.tab-content').id;
+            const tabEl = document.querySelector(`.tab[onclick*="'${tabId}'"]`);
+            const label = tabEl ? tabEl.textContent.trim().split(' ')[0] : tabId;
+            if (!sections.includes(label)) sections.push(label);
+
+            if (tabId === firstTab) {
+                const row = f.inp.closest('.product');
+                const delay = 150 + step * 110;
+                step++;
+                row.style.setProperty('--d', delay + 'ms');
+                row.classList.add('edit-loaded');
+                animateCount(f.inp, f.blocks, delay);
+                setTimeout(() => {
+                    row.classList.remove('edit-loaded');
+                    row.style.removeProperty('--d');
+                }, delay + 1500);
+            } else {
+                f.inp.value = f.blocks;
+                if (tabEl && !pulsed.has(tabId)) {
+                    pulsed.add(tabId);
+                    tabEl.classList.add('tab-pulse');
+                    setTimeout(() => tabEl.classList.remove('tab-pulse'), 2000);
+                }
+            }
+        });
+
+        const firstRow = filled[0].inp.closest('.product');
+        setTimeout(() => firstRow.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
+
+        showNotification(`✏️ ${filled.length} ta mahsulot yuklandi (${sections.join(', ')})`);
+    }, 620);
+}
+
+// Input qiymatini 0 dan maqsadgacha silliq sanab chiqish
+function animateCount(input, target, delay) {
+    const duration = 750;
+    setTimeout(() => {
+        const start = performance.now();
+        function frame(now) {
+            const p = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - p, 3);
+            input.value = p < 1 ? parseFloat((target * eased).toFixed(2)) : target;
+            if (p < 1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+    }, delay);
+}
+
+function clearHistory() {
+    if (confirm("Вы уверены, что хотите очистить всю историю?")) {
+        nakladnoyHistory = [];
+        localStorage.removeItem('nakladnoyHistory');
+        displayHistory();
+        showNotification("История очищена!");
+    }
+}
+
+function resetAll() {
+    if (confirm("Вы уверены, что хотите сбросить все данные?")) {
+        document.querySelectorAll('input').forEach(input => {
+            input.value = "0";
+        });
+        showNotification("Все данные сброшены!");
+    }
+}
+
+function copyNakladnoy() {
+    if(!currentNakladnoyText || currentNakladnoyText.includes("Hech qanday mahsulot tanlanmadi")) {
+        showNotification("Nusxalash uchun ma'lumot yo'q!", true);
+        return;
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(currentNakladnoyText).then(() => {
+            showNotification("Накладной nusxalandi!");
+        }).catch(err => {
+            fallbackCopyText(currentNakladnoyText);
+        });
+    } else {
+        fallbackCopyText(currentNakladnoyText);
+    }
+}
+
+function fallbackCopyText(text) {
+    copyTextarea.value = text;
+    copyTextarea.style.display = 'block';
+    copyFallback.style.display = 'flex';
+    copyTextarea.select();
+    copyTextarea.setSelectionRange(0, 99999);
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showNotification("Накладной nusxalandi!");
+        } else {
+            showNotification("Nusxalash amalga oshmadi!", true);
+        }
+    } catch (err) {
+        showNotification("Nusxalashda xatolik!", true);
+        copyTextarea.focus();
+        return;
+    }
+    setTimeout(() => {
+        copyFallback.style.display = 'none';
+        copyTextarea.style.display = 'none';
+    }, 1000);
+}
+
+copyFallback.addEventListener('click', function(e) {
+    if (e.target === copyFallback) {
+        copyFallback.style.display = 'none';
+    }
 });
-zipInput.addEventListener('change', e=>{
-  const f = e.target.files[0];
-  if(f) processZip(f);
-  zipInput.value = '';
+
+function showNotification(message, isError = false) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    if (isError) {
+        notification.classList.add('error');
+    } else {
+        notification.classList.remove('error');
+    }
+    notification.classList.add('show');
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+window.onclick = function(event) {
+    if (event.target == nakladnoyModal) {
+        nakladnoyModal.style.display = "none";
+    }
+    if (event.target == historyModal) {
+        historyModal.style.display = "none";
+    }
+    if (event.target == optavikOptionsModal) {
+        optavikOptionsModal.style.display = "none";
+    }
+    if (event.target == imageModal) {
+        closeImageModal();
+    }
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        nakladnoyModal.style.display = "none";
+        historyModal.style.display = "none";
+        optavikOptionsModal.style.display = "none";
+        copyFallback.style.display = "none";
+        closeImageModal();
+    }
 });
 
-document.getElementById('resetBtn').addEventListener('click',()=>{
-  gen = {}; viMap = {}; active = null;
-  updateStats();
-  dropZone.style.display  = 'block';
-  resetRow.style.display  = 'none';
-  chipsCard.style.display = 'none';
-  vcard.style.display     = 'none';
-  pw.style.display        = 'none';
-  pf.style.width          = '0%';
-});
+// ===== Jonli jami summa: mahsulot qo'shilganda summa animatsiya bilan o'sib boradi =====
+(function() {
+    const box = document.getElementById('liveTotal');
+    if (!box) return;
+    const amtEl = document.getElementById('ltAmount');
+    const amtWrap = amtEl.parentElement;
+    const blkEl = document.getElementById('ltBlocks');
+    const itemEl = document.getElementById('ltItems');
 
-// ── Process ZIP ────────────────────────────────────
-async function processZip(file){
-  if(!file.name.toLowerCase().endsWith('.zip')){
-    alert("Faqat .zip fayl yuklang!"); return;
-  }
+    let shown = 0, target = 0, tweenId = null;
+    let lastSig = '', lastFx = 0, pendingDelta = 0, deltaTimer = null;
 
-  // UI tayyorlash
-  dropZone.style.display = 'none';
-  pw.style.display = 'block';
-  pf.style.width   = '0%';
-  pl.textContent   = 'ZIP ochilmoqda...';
+    function compute() {
+        let total = 0, blocks = 0, items = 0;
+        document.querySelectorAll('.product input').forEach(i => {
+            const b = parseFloat(i.value) || 0;
+            if (b > 0) {
+                total += Math.round(b * parseInt(i.dataset.sum));
+                blocks += b;
+                items++;
+            }
+        });
+        return { total: total, blocks: blocks, items: items };
+    }
 
-  let zip;
-  try{
-    const ab = await file.arrayBuffer();
-    zip = await JSZip.loadAsync(ab);
-  } catch(e){
-    alert("ZIP o'qib bo'lmadi: " + e.message);
-    dropZone.style.display = 'block';
-    pw.style.display = 'none';
-    return;
-  }
+    function tweenTo(to) {
+        const from = shown;
+        const t0 = performance.now();
+        const dur = 650;
+        cancelAnimationFrame(tweenId);
+        function step(now) {
+            const p = Math.min((now - t0) / dur, 1);
+            const e = 1 - Math.pow(1 - p, 3);
+            shown = from + (to - from) * e;
+            amtEl.textContent = formatNumber(Math.round(shown));
+            if (p < 1) tweenId = requestAnimationFrame(step);
+            else shown = to;
+        }
+        tweenId = requestAnimationFrame(step);
+    }
 
-  // Faqat PNG fayllar
-  const pngFiles = Object.keys(zip.files).filter(n=>
-    !zip.files[n].dir &&
-    n.toLowerCase().endsWith('.png') &&
-    !n.startsWith('__MACOSX')
-  );
+    function spawnDelta() {
+        const d = pendingDelta;
+        pendingDelta = 0;
+        if (!d) return;
+        box.querySelectorAll('.lt-delta').forEach(n => n.remove());
+        const chip = document.createElement('div');
+        chip.className = 'lt-delta' + (d < 0 ? ' neg' : '');
+        chip.textContent = (d > 0 ? '+' : '−') + formatNumber(Math.abs(d));
+        box.appendChild(chip);
+        setTimeout(() => chip.remove(), 1200);
+    }
 
-  if(!pngFiles.length){
-    alert("ZIP ichida PNG fayl topilmadi.");
-    dropZone.style.display = 'block';
-    pw.style.display = 'none';
-    return;
-  }
+    function fx(diff) {
+        const now = performance.now();
+        const up = diff > 0;
+        amtWrap.classList.toggle('down', !up);
+        if (now - lastFx > 280) {
+            lastFx = now;
+            box.classList.remove('lt-up', 'lt-down');
+            amtWrap.classList.remove('bump');
+            void box.offsetWidth;
+            box.classList.add(up ? 'lt-up' : 'lt-down');
+            amtWrap.classList.add('bump');
+        }
+        pendingDelta += diff;
+        clearTimeout(deltaTimer);
+        deltaTimer = setTimeout(spawnDelta, 260);
+        setTimeout(() => amtWrap.classList.remove('down'), 700);
+    }
 
-  gen = {}; viMap = {}; active = null;
-  const total = pngFiles.length;
+    function check() {
+        const c = compute();
+        const sig = c.total + '|' + c.blocks + '|' + c.items;
+        if (sig === lastSig) return;
+        lastSig = sig;
+        blkEl.textContent = formatBlocks(c.blocks);
+        itemEl.textContent = c.items;
+        box.classList.toggle('empty', c.total === 0);
+        if (c.total !== target) {
+            const diff = c.total - target;
+            target = c.total;
+            tweenTo(target);
+            fx(diff);
+        }
+    }
 
-  for(let i=0; i<total; i++){
-    const path = pngFiles[i];
-    const { product, num } = parseFilePath(path);
-
-    pl.textContent = product + ' · ' + (i+1) + ' / ' + total;
-    pf.style.width = Math.round(((i+1)/total)*100) + '%';
-
-    try{
-      const blob    = await zip.files[path].async('blob');
-      const dataUrl = await blobToDataUrl(blob);
-      const fname   = path.split('/').pop().replace(/\.png$/i,'');
-
-      if(!gen[product]) gen[product] = [];
-      gen[product].push({ text: fname, dataUrl, num });
-    } catch(e){ /* skip broken */ }
-
-    if(i % 15 === 0) await sleep(10);
-  }
-
-  // Har mahsulot kodlarini tartiblab chiqish
-  Object.values(gen).forEach(arr => arr.sort((a,b)=>a.num-b.num));
-
-  pw.style.display = 'none';
-
-  const keys = Object.keys(gen);
-  if(!keys.length){ alert("Hech narsa yuklanmadi."); dropZone.style.display='block'; return; }
-
-  active = keys[0];
-  // viMap — hamma mahsulot 0 dan boshlanadi
-  keys.forEach(k => viMap[k] = 0);
-
-  updateStats();
-  renderChips();
-  renderViewer();
-  resetRow.style.display = 'block';
-}
-
-// ── Mahsulot kartochkasi (rasm + qisqa nom + son) — chips va vtabs uchun umumiy ──
-function productCardHtml(n){
-  const img = getProductImage(n);
-  const label = getShortName(n);
-  const imgHtml = img
-    ? `<img src="${img}" alt="${esc(label)}" loading="lazy" onerror="this.outerHTML='<div class=&quot;chip-ph&quot;><i class=&quot;fas fa-wine-bottle&quot;></i></div>'">`
-    : `<div class="chip-ph"><i class="fas fa-wine-bottle"></i></div>`;
-  return `
-    <div class="chip${n===active?' on':''}" onclick="SW('${esc(n)}')">
-      ${imgHtml}
-      <span class="clabel">${esc(label)} <b>(${gen[n].length})</b></span>
-    </div>`;
-}
-
-// ── Chips ──────────────────────────────────────────
-function renderChips(){
-  const keys = Object.keys(gen);
-  chipsCard.style.display = keys.length ? 'block' : 'none';
-  chipsEl.innerHTML = keys.map(n=>productCardHtml(n)).join('');
-}
-
-// Mahsulot almashganda vi RESET BO'LMAYDI — viMap da saqlangan qoladi
-window.SW = function(n){
-  active = n;
-  renderChips();
-  renderViewer('sR');
-};
-
-// ── Viewer ─────────────────────────────────────────
-function renderViewer(anim=''){
-  vcard.style.display = 'block';
-
-  if(!active || !gen[active]){
-    vcard.innerHTML = `<div class="ph-box"><i class="fas fa-smile-wink"></i><p>ZIP faylni yuklang.</p></div>`;
-    return;
-  }
-
-  const codes = gen[active];
-  const item  = codes[vi];
-  const keys  = Object.keys(gen);
-
-  const tabs = keys.length > 1
-    ? `<div class="vtabs">${keys.map(n=>productCardHtml(n)).join('')}</div>`
-    : '';
-
-  const pImg = getProductImage(active);
-  const pImgHtml = pImg
-    ? `<div class="pimg-wrap"><img class="pimg" src="${pImg}" alt="${esc(active)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;pimg-ph&quot;><i class=&quot;fas fa-wine-bottle&quot;></i></div>'"></div>`
-    : `<div class="pimg-wrap"><div class="pimg-ph"><i class="fas fa-wine-bottle"></i></div></div>`;
-
-  vcard.innerHTML = `
-    <div class="vpname"><i class="fas fa-box-open"></i>${esc(active)}</div>
-    ${tabs}
-    <div id="vc" class="${anim}">
-      ${pImgHtml}
-      <div class="qbox"><img src="${item.dataUrl}" alt="DM" loading="lazy"></div><br>
-      <div class="qtxt">${esc(item.text)}</div>
-      <div class="qidx">${vi+1} / ${codes.length}</div>
-      <button class="dl1" id="dl1"><i class="fas fa-download"></i> Yuklab olish</button>
-    </div>
-    <div class="navrow">
-      <div class="nb" id="nb_p"><i class="fas fa-chevron-up"></i></div>
-      <div class="nb" id="nb_n"><i class="fas fa-chevron-down"></i></div>
-    </div>`;
-
-  document.getElementById('nb_p').onclick = ()=>{ if(vi>0){ vi--; renderViewer('sL'); } };
-  document.getElementById('nb_n').onclick = ()=>{ if(vi<codes.length-1){ vi++; renderViewer('sR'); } };
-  document.getElementById('dl1').onclick  = ()=> dlOne(active, vi);
-}
-
-// ── Download one ────────────────────────────────────
-async function dlOne(pname, idx){
-  const item = gen[pname][idx];
-  if(!item) return;
-  const blob = await (await fetch(item.dataUrl)).blob();
-  const a = document.createElement('a');
-  a.href     = URL.createObjectURL(blob);
-  a.download = item.text + '.png';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-// ── Touch swipe (faqat DataMatrix rasmi ustida) ─────
-let tx = 0;
-let swipeOnQbox = false;
-vcard.addEventListener('touchstart', e=>{
-  swipeOnQbox = !!e.target.closest('.qbox');
-  tx = e.touches[0].clientX;
-}, {passive:true});
-vcard.addEventListener('touchend',   e=>{
-  if(!swipeOnQbox) return;
-  const dx = e.changedTouches[0].clientX - tx;
-  if(Math.abs(dx) < 40) return;
-  if(!active || !gen[active]) return;
-  const codes = gen[active];
-  if(dx < 0 && vi < codes.length-1){ vi++; renderViewer('sR'); }
-  if(dx > 0 && vi > 0)             { vi--; renderViewer('sL'); }
-}, {passive:true});
-
-// ── Keyboard ────────────────────────────────────────
-document.addEventListener('keydown', e=>{
-  if(!active || !gen[active]) return;
-  const codes = gen[active];
-  if(e.key==='ArrowDown'||e.key==='ArrowRight'){
-    if(vi < codes.length-1){ vi++; renderViewer('sR'); }
-  }
-  if(e.key==='ArrowUp'||e.key==='ArrowLeft'){
-    if(vi > 0){ vi--; renderViewer('sL'); }
-  }
-});
-
+    // Qo'lda yozilganda ham, sbros / tarixdan yuklanganda ham (dasturiy o'zgarishlar) ishlaydi
+    document.addEventListener('input', check);
+    setInterval(check, 100);
 })();
 </script>
 </body>
