@@ -1070,6 +1070,52 @@ html[data-theme="dark"] .theme-topbar {
 #glass-pet:checked ~ .glass-glider { transform: translateX(0%); }
 #glass-rgb:checked ~ .glass-glider { transform: translateX(100%); }
 #glass-can:checked ~ .glass-glider { transform: translateX(200%); }
+
+/* ===== Фото накладной — yangi qism ===== */
+@keyframes phShift { to { background-position: 300% 0; } }
+@keyframes phShine { from { transform: translateX(-140%) skewX(-20deg); } to { transform: translateX(340%) skewX(-20deg); } }
+@keyframes phFloat { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-3px) rotate(-8deg); } }
+@keyframes phPrint { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes phLine { from { top: 0; opacity: 1; } 92% { opacity: 1; } to { top: 100%; opacity: 0; } }
+
+.btn-photo {
+    position: relative; overflow: hidden; color: #fff;
+    background: linear-gradient(110deg, #AF52DE, #5E5CE6, #0A84FF, #AF52DE);
+    background-size: 300% 100%;
+    animation: phShift 7s linear infinite;
+    box-shadow: 0 6px 18px rgba(94, 92, 230, .35);
+}
+.btn-photo::after {
+    content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 30%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+    animation: phShine 3.2s ease-in-out infinite;
+}
+.btn-photo .ph-ico { display: inline-block; animation: phFloat 2.6s ease-in-out infinite; }
+
+.ph-head { background: linear-gradient(135deg, #AF52DE, #5E5CE6); }
+.ph-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.ph-f {
+    padding: 10px 12px; min-height: 42px; border-radius: 12px; outline: none;
+    background: rgba(118, 118, 128, .12); color: var(--ios-text);
+    font-size: 15px; font-weight: 600; word-break: break-word;
+    -webkit-user-select: text; user-select: text; transition: box-shadow .2s;
+}
+.ph-f:empty::before { content: attr(data-ph); color: var(--ios-text-secondary); font-weight: 500; }
+.ph-f:focus { box-shadow: 0 0 0 2px #AF52DE; }
+.ph-paper-wrap { overflow-x: auto; border-radius: 12px; background: #fff; border: 1px solid rgba(0,0,0,.12); }
+.ph-paper { position: relative; min-width: 640px; line-height: 0; }
+.ph-paper canvas { display: block; width: 100%; height: auto; }
+.ph-paper.print canvas { animation: phPrint 1s cubic-bezier(.4,0,.2,1); }
+.ph-paper.print::after {
+    content: ''; position: absolute; left: 0; right: 0; height: 3px; background: #30D158;
+    box-shadow: 0 0 16px 5px rgba(48,209,88,.65); animation: phLine 1s cubic-bezier(.4,0,.2,1) forwards;
+}
+.ph-hint { margin-top: 8px; text-align: center; font-size: 13px; color: var(--ios-text-secondary); }
+.ph-btn-green { background: linear-gradient(135deg, #34C759, #2BB14E); color: #fff; box-shadow: 0 4px 14px rgba(52,199,89,.3); }
+
+@media (prefers-reduced-motion: reduce) {
+    .btn-photo, .btn-photo::after, .btn-photo .ph-ico, .ph-paper.print canvas, .ph-paper.print::after { animation: none !important; }
+}
 </style>
 </head>
 <body>
@@ -1372,6 +1418,11 @@ html[data-theme="dark"] .theme-topbar {
                     <span>📋</span> Копировать
                 </button>
             </div>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-photo" onclick="openPhotoModal()">
+                    <span class="ph-ico">📸</span> Фото накладной
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -1423,6 +1474,30 @@ html[data-theme="dark"] .theme-topbar {
                 <button class="modal-btn modal-btn-copy" onclick="clearHistory()">
                     <span>🗑️</span> Очистить историю
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Фото накладной modal oynasi -->
+<div id="photoModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header ph-head">
+            <div class="modal-title">📸 Фото накладной</div>
+            <div class="close-modal" onclick="closeModal('photoModal')">×</div>
+        </div>
+        <div class="modal-body">
+            <div class="ph-fields">
+                <div class="ph-f" id="phKontragent" contenteditable="true" data-ph="Контрагент"></div>
+                <div class="ph-f" id="phOrientir" contenteditable="true" data-ph="Ориентир"></div>
+                <div class="ph-f" id="phAgent" contenteditable="true" data-ph="Торговый представитель"></div>
+                <div class="ph-f" id="phNomer" contenteditable="true" data-ph="№ накладной"></div>
+            </div>
+            <div class="ph-paper-wrap"><div class="ph-paper" id="phPaper"></div></div>
+            <div class="ph-hint">Maydonlarni yozsangiz, rasm o'zi yangilanadi</div>
+            <div class="modal-buttons">
+                <button class="modal-btn ph-btn-green" id="phShare"><span>📤</span> Отправить</button>
+                <button class="modal-btn modal-btn-copy" id="phSave"><span>💾</span> Сохранить</button>
             </div>
         </div>
     </div>
@@ -2235,6 +2310,147 @@ document.addEventListener('keydown', function(event) {
     // Qo'lda yozilganda ham, sbros / tarixdan yuklanganda ham (dasturiy o'zgarishlar) ishlaydi
     document.addEventListener('input', check);
     setInterval(check, 100);
+})();
+</script>
+<script>
+// ===== Фото накладной — yangi qism =====
+(function () {
+    const $ = id => document.getElementById(id);
+    const FIELDS = ['phKontragent', 'phOrientir', 'phAgent', 'phNomer'];
+    let cur = null, canvas = null;
+
+    const fmt = n => Number(n || 0).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/[\u202f\u00a0]/g, ' ');
+    const val = id => ($(id).textContent || '').trim();
+
+    // Hozir modalda ko'rinib turgan накладной (oddiy, оптовик yoki tarixdan) ni topish
+    function currentItem() {
+        if (!currentNakladnoyText) return null;
+        const dt = ($('modalDateTime').textContent || '').replace('Дата:', '').trim();
+        return nakladnoyHistory.find(i => i.fullText === currentNakladnoyText && i.date === dt)
+            || nakladnoyHistory.find(i => i.fullText === currentNakladnoyText) || null;
+    }
+
+    window.openPhotoModal = function () {
+        const it = currentItem();
+        if (!it || !Array.isArray(it.products) || !it.products.length) {
+            showNotification('Avval mahsulot sonini kiriting', true); return;
+        }
+        cur = it;
+        try { if (!val('phAgent')) $('phAgent').textContent = localStorage.getItem('phAgent') || ''; } catch (e) {}
+        $('photoModal').style.display = 'block';
+        render(true);
+    };
+    $('photoModal').addEventListener('click', e => { if (e.target === $('photoModal')) closeModal('photoModal'); });
+
+    FIELDS.forEach(id => {
+        $(id).addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+        $(id).addEventListener('paste', e => {
+            e.preventDefault();
+            const t = (e.clipboardData || window.clipboardData).getData('text').replace(/\s+/g, ' ');
+            document.execCommand('insertText', false, t);
+        });
+        $(id).addEventListener('input', () => {
+            if (id === 'phAgent') { try { localStorage.setItem('phAgent', val(id)); } catch (e) {} }
+            render(false);
+        });
+    });
+
+    function draw() {
+        const items = cur.products.map(p => {
+            const d = p.discountPercent || 0;
+            const price = d > 0 ? Math.round(p.price * (100 - d) / 100) : p.price;
+            const qty = p.blocks < 1 && getUnitsPerBlock(p.name) && Math.abs(p.blocks * getUnitsPerBlock(p.name) - Math.round(p.blocks * getUnitsPerBlock(p.name))) < 1e-6
+                ? Math.round(p.blocks * getUnitsPerBlock(p.name)) + ' шт'
+                : formatBlocks(p.blocks) + ' бл';
+            return { nom: p.name + (d > 0 ? ' (-' + d + '%)' : ''), qty, price, sum: p.sum };
+        });
+        const total = items.reduce((a, r) => a + r.sum, 0);
+
+        const W = 800, P = 16, HH = 36, RH = 32, n = items.length, T = P + 86, k = 2;
+        const H = T + HH + n * RH + HH + P;
+        const c = document.createElement('canvas'); c.width = W * k; c.height = H * k;
+        const g = c.getContext('2d'); g.scale(k, k);
+        g.fillStyle = '#fff'; g.fillRect(0, 0, W, H);
+        g.textBaseline = 'middle'; g.strokeStyle = '#000'; g.lineWidth = 1;
+
+        const txt = (s, x, y, al, sz, maxW, bold) => {
+            s = String(s == null ? '' : s);
+            const f = z => (bold ? 'bold ' : '') + z + 'px Arial, Helvetica, sans-serif';
+            g.font = f(sz);
+            while (maxW && g.measureText(s).width > maxW && sz > 9) { sz--; g.font = f(sz); }
+            g.fillStyle = '#000'; g.textAlign = al; g.fillText(s, x, y);
+        };
+        const cell = (x, y, w, h, fill) => {
+            if (fill) { g.fillStyle = fill; g.fillRect(x, y, w, h); }
+            g.strokeRect(x + .5, y + .5, w, h);
+        };
+
+        const date = (cur.date || '').split(' ')[0];
+        txt('Контрагент: ' + val('phKontragent'), P, P + 12, 'left', 16, 370, true);
+        txt('Ориентир: ' + val('phOrientir'), P, P + 38, 'left', 16, 370, true);
+        txt('Торговый представитель: ' + val('phAgent'), 410, P + 12, 'left', 16, 374, true);
+        txt('Дата отгрузки: ' + date, 410, P + 38, 'left', 16, 374, true);
+        txt('№' + val('phNomer'), 410, P + 64, 'left', 18, 200, false);
+        txt(cur.type || '', P, P + 64, 'left', 14, 370, false);
+
+        const w = [44, 274, 100, 175, 175], x = [P];
+        w.forEach((v, i) => x.push(x[i] + v));
+        const G = '#c8c8c8';
+
+        ['№', 'ТМЦ', 'Количество', 'Цена с переоценкой', 'Сумма'].forEach((s, i) => {
+            cell(x[i], T, w[i], HH, G);
+            txt(s, x[i] + w[i] / 2, T + HH / 2, 'center', 15, w[i] - 10, true);
+        });
+        items.forEach((it, r) => {
+            const y = T + HH + r * RH, m = y + RH / 2;
+            w.forEach((v, i) => cell(x[i], y, v, RH));
+            txt(r + 1, x[0] + w[0] - 8, m, 'right', 15);
+            txt(it.nom, x[1] + 8, m, 'left', 15, w[1] - 16);
+            txt(it.qty, x[2] + w[2] - 8, m, 'right', 15, w[2] - 12);
+            txt(fmt(it.price), x[3] + w[3] - 8, m, 'right', 15, w[3] - 14);
+            txt(fmt(it.sum), x[4] + w[4] - 8, m, 'right', 15, w[4] - 14);
+        });
+        const y = T + HH + n * RH, m = y + HH / 2;
+        cell(x[0], y, w[0] + w[1], HH, G); cell(x[2], y, w[2], HH, G);
+        cell(x[3], y, w[3], HH, G); cell(x[4], y, w[4], HH, G);
+        txt('Итог', x[0] + (w[0] + w[1]) / 2, m, 'center', 16, 200, true);
+        txt('Общая сумма', x[3] + w[3] - 8, m, 'right', 15, w[3] - 14, true);
+        txt(fmt(total), x[4] + w[4] - 8, m, 'right', 16, w[4] - 14, true);
+        return c;
+    }
+
+    let raf = 0;
+    function render(animate) {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+            canvas = draw();
+            const box = $('phPaper');
+            box.classList.remove('print');
+            box.innerHTML = ''; box.appendChild(canvas);
+            if (animate) { void box.offsetWidth; box.classList.add('print'); }
+        });
+    }
+
+    const fname = () => 'nakladnoy-' + (cur.date || '').replace(/[^\d]+/g, '-').replace(/-$/, '') + '.png';
+    const blob = () => new Promise(ok => canvas.toBlob(ok, 'image/png'));
+
+    $('phSave').onclick = async () => {
+        const b = await blob(), a = document.createElement('a');
+        a.href = URL.createObjectURL(b); a.download = fname();
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        showNotification('Rasm saqlandi ✅');
+    };
+    $('phShare').onclick = async () => {
+        const b = await blob(), f = new File([b], fname(), { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [f] })) {
+            try { await navigator.share({ files: [f], title: 'Накладной' }); }
+            catch (e) { if (e.name !== 'AbortError') showNotification('Yuborib bo\'lmadi', true); }
+        } else {
+            $('phSave').click();
+            showNotification('Brauzer ulashishni qo\'llamaydi — rasm saqlandi');
+        }
+    };
 })();
 </script>
 </body>
