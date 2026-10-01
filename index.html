@@ -1060,7 +1060,7 @@ html[data-theme="dark"] .theme-topbar {
     top: 4px;
     bottom: 4px;
     left: 4px;
-    width: calc((100% - 8px) / 3);
+    width: calc((100% - 8px) / 4);
     border-radius: 11px;
     z-index: 1;
     background: var(--ios-card);
@@ -1070,6 +1070,7 @@ html[data-theme="dark"] .theme-topbar {
 #glass-pet:checked ~ .glass-glider { transform: translateX(0%); }
 #glass-rgb:checked ~ .glass-glider { transform: translateX(100%); }
 #glass-can:checked ~ .glass-glider { transform: translateX(200%); }
+#glass-keg:checked ~ .glass-glider { transform: translateX(300%); }
 
 /* ===== Фото накладной — yangi qism ===== */
 @keyframes phShift { to { background-position: 300% 0; } }
@@ -1161,6 +1162,9 @@ html[data-theme="dark"] .theme-topbar {
 
     <input type="radio" name="mainTab" id="glass-can" />
     <label class="tab" for="glass-can" onclick="openTab('can')">CAN</label>
+
+    <input type="radio" name="mainTab" id="glass-keg" />
+    <label class="tab" for="glass-keg" onclick="openTab('keg')">KEG</label>
 
     <div class="glass-glider"></div>
 </div>
@@ -1378,6 +1382,82 @@ html[data-theme="dark"] .theme-topbar {
             <div class="product-price">381.830,40 UZS/блок</div>
         </div>
         <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Carlsberg Pilsner CAN" data-sum="381830.4">
+    </div>
+</div>
+
+<!-- KEG -->
+<div id="keg" class="tab-content">
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/dsJxrBwt/file-000000004fd48243b040ab01cead4cdb.png" alt="Sarbast Lite KEG" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Lite KEG</div>
+            <div class="product-volume">30 litr</div>
+            <div class="product-price">454.904,80 UZS/кега</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Lite KEG 30L" data-sum="454904.8">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/dsJxrBwt/file-000000004fd48243b040ab01cead4cdb.png" alt="Sarbast Original KEG" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Original KEG</div>
+            <div class="product-volume">30 litr</div>
+            <div class="product-price">454.904,80 UZS/кега</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Original KEG 30L" data-sum="454904.8">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/dsJxrBwt/file-000000004fd48243b040ab01cead4cdb.png" alt="Sarbast Original Unfiltered KEG" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Sarbast Original Unfiltered KEG</div>
+            <div class="product-volume">30 litr</div>
+            <div class="product-price">454.904,80 UZS/кега</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Sarbast Original Unfiltered KEG 30L" data-sum="454904.8">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/dsJxrBwt/file-000000004fd48243b040ab01cead4cdb.png" alt="Tuborg Green KEG" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Tuborg Green KEG</div>
+            <div class="product-volume">30 litr</div>
+            <div class="product-price">549.024 UZS/кега</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Tuborg Green KEG 30L" data-sum="549024">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/dsJxrBwt/file-000000004fd48243b040ab01cead4cdb.png" alt="Zatecky Gus Svetly KEG" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Zatecky Gus Svetly KEG</div>
+            <div class="product-volume">30 litr</div>
+            <div class="product-price">549.024 UZS/кега</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Zatecky Gus Svetly KEG 30L" data-sum="549024">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/dsJxrBwt/file-000000004fd48243b040ab01cead4cdb.png" alt="Zatecky Gus Nefiltrovaniy KEG" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Zatecky Gus Nefiltrovaniy KEG</div>
+            <div class="product-volume">30 litr</div>
+            <div class="product-price">549.024 UZS/кега</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Zatecky Gus Nefiltrovaniy KEG 30L" data-sum="549024">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/dsJxrBwt/file-000000004fd48243b040ab01cead4cdb.png" alt="Carlsberg Pilsner KEG" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Carlsberg Pilsner KEG</div>
+            <div class="product-volume">20 litr</div>
+            <div class="product-price">390.600 UZS/кега</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Carlsberg Pilsner KEG 20L" data-sum="390600">
+    </div>
+    <div class="product">
+        <img class="product-image" src="https://i.ibb.co/dsJxrBwt/file-000000004fd48243b040ab01cead4cdb.png" alt="Kronenbourg 1664 Blanc KEG" onclick="openImageModal(this.src)">
+        <div class="product-info">
+            <div class="product-name">Kronenbourg 1664 Blanc KEG</div>
+            <div class="product-volume">20 litr</div>
+            <div class="product-price">856.611,84 UZS/кега</div>
+        </div>
+        <input type="number" min="0" step="0.01" value="0" inputmode="decimal" data-name="Kronenbourg 1664 Blanc KEG 20L" data-sum="856611.84">
     </div>
 </div>
 
@@ -1727,7 +1807,13 @@ function getUnitsPerBlock(name) {
 }
 
 // Agar kiritilgan blok soni 1 dan kichik bo'lsa va butun donaga aylansa — "N шт", aks holda — "N.NN блоков"
+// Kega (KEG) — dona bilan hisoblanadi, blok emas
+function isKeg(name) {
+    return String(name).includes("KEG");
+}
+
 function formatBlockLabel(name, blocks) {
+    if (isKeg(name)) return `${formatBlocks(blocks)} шт`;
     if (blocks < 1) {
         const units = getUnitsPerBlock(name);
         if (units) {
@@ -1760,6 +1846,7 @@ function generateNakladnoy() {
     let allProducts = [];
     let total = 0;
     let totalBlocks = 0;
+    let totalKegs = 0;
     let hasProducts = false;
 
     document.querySelectorAll('input').forEach(i => {
@@ -1776,7 +1863,7 @@ function generateNakladnoy() {
                 discountPercent: 0
             });
             total += sum;
-            totalBlocks += blocks;
+            if (isKeg(i.dataset.name)) totalKegs += blocks; else totalBlocks += blocks;
         }
     });
 
@@ -1793,7 +1880,8 @@ function generateNakladnoy() {
             fullText += `• ${p.name} — ${formatBlockLabel(p.name, p.blocks)} × ${formatNumber(p.price)} = ${formatNumber(p.sum)} UZS\n`;
         });
         fullText += "━━━━━━━━━━━━━━━━━━\n";
-        fullText += `📦 Всего блоков: ${formatBlocks(totalBlocks)}\n`;
+        if (totalBlocks > 0) fullText += `📦 Всего блоков: ${formatBlocks(totalBlocks)}\n`;
+        if (totalKegs > 0) fullText += `🍺 Всего кег: ${formatBlocks(totalKegs)} шт\n`;
         fullText += `✅ ИТОГО: ${formatNumber(total)} UZS`;
         document.getElementById('modalTotal').textContent = `ИТОГО: ${formatNumber(total)} UZS`;
 
@@ -1829,6 +1917,7 @@ function generateOptavik(option) {
     let totalBeforeDiscount = 0;
     let totalAfterDiscount = 0;
     let totalBlocks = 0;
+    let totalKegs = 0;
     let hasProducts = false;
 
     document.querySelectorAll('input').forEach(i => {
@@ -1841,7 +1930,7 @@ function generateOptavik(option) {
             let isSarbastPet = i.dataset.name === "Sarbast Lite PET" || 
                                i.dataset.name === "Sarbast Original PET" || 
                                i.dataset.name === "Sarbast Special PET";
-            let isSarbast = i.dataset.name.includes("Sarbast");
+            let isSarbast = i.dataset.name.includes("Sarbast") && !isKeg(i.dataset.name);
 
             switch(option) {
                 case 1:
@@ -1880,7 +1969,7 @@ function generateOptavik(option) {
 
             totalBeforeDiscount += sumBefore;
             totalAfterDiscount += sumAfter;
-            totalBlocks += blocks;
+            if (isKeg(i.dataset.name)) totalKegs += blocks; else totalBlocks += blocks;
         }
     });
 
@@ -1909,7 +1998,8 @@ function generateOptavik(option) {
             fullText += line + "\n";
         });
         fullText += "━━━━━━━━━━━━━━━━━━\n";
-        fullText += `📦 Всего блоков: ${formatBlocks(totalBlocks)}\n`;
+        if (totalBlocks > 0) fullText += `📦 Всего блоков: ${formatBlocks(totalBlocks)}\n`;
+        if (totalKegs > 0) fullText += `🍺 Всего кег: ${formatBlocks(totalKegs)} шт\n`;
 
         const discountAmount = totalBeforeDiscount - totalAfterDiscount;
         if (discountAmount > 0) {
@@ -2238,7 +2328,7 @@ document.addEventListener('keydown', function(event) {
             const b = parseFloat(i.value) || 0;
             if (b > 0) {
                 total += Math.round(b * parseInt(i.dataset.sum));
-                blocks += b;
+                if (!isKeg(i.dataset.name)) blocks += b;
                 items++;
             }
         });
@@ -2359,7 +2449,7 @@ document.addEventListener('keydown', function(event) {
         const items = cur.products.map(p => {
             const d = p.discountPercent || 0;
             const price = d > 0 ? Math.round(p.price * (100 - d) / 100) : p.price;
-            const qty = p.blocks < 1 && getUnitsPerBlock(p.name) && Math.abs(p.blocks * getUnitsPerBlock(p.name) - Math.round(p.blocks * getUnitsPerBlock(p.name))) < 1e-6
+            const qty = isKeg(p.name) ? formatBlocks(p.blocks) + ' шт' : p.blocks < 1 && getUnitsPerBlock(p.name) && Math.abs(p.blocks * getUnitsPerBlock(p.name) - Math.round(p.blocks * getUnitsPerBlock(p.name))) < 1e-6
                 ? Math.round(p.blocks * getUnitsPerBlock(p.name)) + ' шт'
                 : formatBlocks(p.blocks) + ' бл';
             return { nom: p.name + (d > 0 ? ' (-' + d + '%)' : ''), qty, price, sum: p.sum };
