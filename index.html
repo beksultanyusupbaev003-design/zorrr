@@ -2543,5 +2543,48 @@ document.addEventListener('keydown', function(event) {
     };
 })();
 </script>
+<script>
+// ===== Offline rasmlar: birinchi marta internet bilan ochilganda rasmlar telefon xotirasiga saqlanadi =====
+(function () {
+    const DB_NAME = 'imgCacheDB', STORE = 'imgs';
+    function openDB() {
+        return new Promise((ok, no) => {
+            const r = indexedDB.open(DB_NAME, 1);
+            r.onupgradeneeded = () => r.result.createObjectStore(STORE);
+            r.onsuccess = () => ok(r.result);
+            r.onerror = () => no(r.error);
+        });
+    }
+    const idbGet = (db, k) => new Promise(ok => {
+        const q = db.transaction(STORE).objectStore(STORE).get(k);
+        q.onsuccess = () => ok(q.result || null); q.onerror = () => ok(null);
+    });
+    const idbSet = (db, k, v) => new Promise(ok => {
+        const t = db.transaction(STORE, 'readwrite'); t.objectStore(STORE).put(v, k);
+        t.oncomplete = () => ok(true); t.onerror = () => ok(false);
+    });
+
+    async function run() {
+        let db;
+        try { db = await openDB(); } catch (e) { return; }
+        const imgs = document.querySelectorAll('img.product-image');
+        for (const img of imgs) {
+            const url = img.dataset.origSrc || img.getAttribute('src');
+            if (!url || !/^https?:/.test(url)) continue;
+            img.dataset.origSrc = url;
+            try {
+                let blob = await idbGet(db, url);
+                if (!blob && navigator.onLine) {
+                    const res = await fetch(url, { mode: 'cors' });
+                    if (res.ok) { blob = await res.blob(); await idbSet(db, url, blob); }
+                }
+                if (blob) img.src = URL.createObjectURL(blob);
+            } catch (e) { /* internet yo'q yoki rasm yuklanmadi — eski src qoladi */ }
+        }
+    }
+    window.addEventListener('load', run);
+    window.addEventListener('online', run);
+})();
+</script>
 </body>
 </html>
