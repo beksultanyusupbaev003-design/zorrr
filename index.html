@@ -1117,9 +1117,55 @@ html[data-theme="dark"] .theme-topbar {
 @media (prefers-reduced-motion: reduce) {
     .btn-photo, .btn-photo::after, .btn-photo .ph-ico, .ph-paper.print canvas, .ph-paper.print::after { animation: none !important; }
 }
+
+/* ===== LOADER ===== */
+#appLoader{position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#F2F2F7;color:#1C1C1E;font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;transition:opacity .35s ease}
+html[data-theme="dark"] #appLoader{background:#000;color:#fff}
+#appLoader.hide{opacity:0;pointer-events:none}
+#appLoader .ld-title{font-size:20px;font-weight:700;letter-spacing:-.3px}
+#appLoader .ld-pct{font-size:44px;font-weight:800;font-variant-numeric:tabular-nums}
+#appLoader .ld-bar{width:240px;max-width:70vw;height:8px;border-radius:8px;background:rgba(118,118,128,.25);overflow:hidden}
+#appLoader .ld-fill{height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,#34C759,#007AFF);transition:width .2s linear}
+#appLoader .ld-sub{font-size:14px;opacity:.6}
 </style>
 </head>
 <body>
+<div id="appLoader"><div class="ld-title">Yuklanmoqda…</div><div class="ld-pct" id="ldPct">0%</div><div class="ld-bar"><div class="ld-fill" id="ldFill"></div></div><div class="ld-sub">Rasmlar sifatli yuklanmoqda…</div></div>
+<script>
+(function(){
+  var L=document.getElementById('appLoader'),P=document.getElementById('ldPct'),F=document.getElementById('ldFill');
+  var shown=0,real=0,done=false;
+  function set(v){v=Math.min(100,Math.round(v));P.textContent=v+'%';F.style.width=v+'%';}
+  function finish(){if(done)return;done=true;set(100);setTimeout(function(){L.classList.add('hide');setTimeout(function(){L.remove();},400);},250);}
+  var t=setInterval(function(){
+    if(shown<real)shown=Math.min(real,shown+Math.max(1,Math.ceil((real-shown)/6)));
+    set(shown);
+    if(shown>=100){clearInterval(t);finish();}
+  },30);
+  function waitImg(im){
+    var d=(im.decode?im.decode():new Promise(function(ok,no){if(im.complete)ok();else{im.onload=ok;im.onerror=no;}}));
+    var to=new Promise(function(ok){setTimeout(ok,7000);});
+    return Promise.race([d,to]).catch(function(){});
+  }
+  async function run(){
+    var imgs=[].slice.call(document.querySelectorAll('img.product-image'));
+    var total=imgs.length+2,ok=0;
+    function step(){ok++;real=ok/total*100;}
+    if(document.readyState!=='complete')await Promise.race([new Promise(function(r){window.addEventListener('load',r,{once:true});}),new Promise(function(r){setTimeout(r,3000);})]);
+    step();
+    try{if(document.fonts&&document.fonts.ready)await document.fonts.ready;}catch(e){}
+    step();
+    for(var i=0;i<imgs.length;i+=3){
+      await Promise.all(imgs.slice(i,i+3).map(function(im){return waitImg(im).then(step);}));
+      await new Promise(function(r){setTimeout(r,0);});
+    }
+    real=100;
+  }
+  run();
+  setTimeout(function(){real=100;},20000);
+})();
+</script>
+
 <div class="live-total empty" id="liveTotal">
     <div class="lt-left">
         <!-- From Uiverse.io by RiccardoRapelli -->
