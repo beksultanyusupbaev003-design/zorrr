@@ -1128,6 +1128,77 @@ html[data-theme="dark"] #appLoader{background:#000;color:#fff}
 #appLoader .ld-fill{height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,#34C759,#007AFF);transition:width .2s linear}
 #appLoader .ld-sub{font-size:14px;opacity:.6}
 </style>
+<style id="weightStyle">
+/* ===== Umumiy og'irlik (kg / T) ===== */
+.weight-total {
+    position: relative;
+    margin: 18px 0 30px 0;
+    padding: 12px 16px 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--ios-card);
+    border-radius: 18px;
+    box-shadow: var(--shadow-elevated);
+    transition: opacity 0.35s ease;
+}
+.weight-total::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 4px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, var(--ios-orange), var(--ios-blue));
+}
+.weight-total.empty { opacity: 0.8; }
+.wt-left { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
+.wt-icon { font-size: 30px; line-height: 1; flex-shrink: 0; }
+.wt-detail { font-size: 12px; font-weight: 600; color: var(--ios-text-secondary); margin-top: 2px; }
+.wt-amount {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--ios-blue);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-align: right;
+    transform-origin: right center;
+    transition: color 0.3s ease;
+}
+.wt-amount small { font-size: 13px; font-weight: 700; color: var(--ios-text-secondary); letter-spacing: 0; margin: 0 2px 0 3px; }
+.wt-amount.down { color: var(--ios-orange); }
+.wt-amount.bump { animation: amtBump 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.weight-total.wt-up   { animation: wtRingUp 0.8s ease; }
+.weight-total.wt-down { animation: wtRingDown 0.8s ease; }
+@keyframes wtRingUp {
+    0%   { box-shadow: 0 0 0 0 rgba(0,122,255,0.5), 0 8px 30px rgba(0,0,0,0.10); }
+    100% { box-shadow: 0 0 0 18px rgba(0,122,255,0), 0 8px 30px rgba(0,0,0,0.10); }
+}
+@keyframes wtRingDown {
+    0%   { box-shadow: 0 0 0 0 rgba(255,149,0,0.55), 0 8px 30px rgba(0,0,0,0.10); }
+    100% { box-shadow: 0 0 0 18px rgba(255,149,0,0), 0 8px 30px rgba(0,0,0,0.10); }
+}
+.wt-delta {
+    position: absolute;
+    right: 14px;
+    bottom: -14px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    background: var(--ios-blue);
+    box-shadow: 0 4px 12px rgba(0,122,255,0.45);
+    pointer-events: none;
+    white-space: nowrap;
+    animation: ltDelta 1.15s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+.wt-delta.neg { background: var(--ios-orange); box-shadow: 0 4px 12px rgba(255,149,0,0.45); }
+html[data-theme="dark"] .weight-total { border: 1px solid rgba(255,255,255,0.08); }
+</style>
 </head>
 <body>
 <div id="appLoader"><div class="ld-title">Yuklanmoqda…</div><div class="ld-pct" id="ldPct">0%</div><div class="ld-bar"><div class="ld-fill" id="ldFill"></div></div><div class="ld-sub">Rasmlar sifatli yuklanmoqda…</div></div>
@@ -1551,6 +1622,18 @@ html[data-theme="dark"] #appLoader{background:#000;color:#fff}
         <div class="btn-icon">🔄</div>
         <div class="btn-text">Сброс</div>
     </button>
+</div>
+
+<!-- Umumiy og'irlik -->
+<div class="weight-total empty" id="weightTotal">
+    <div class="wt-left">
+        <div class="wt-icon">⚖️</div>
+        <div>
+            <div class="lt-label">UMUMIY OG'IRLIK</div>
+            <div class="wt-detail" id="wtDetail">Mahsulot tanlanmagan</div>
+        </div>
+    </div>
+    <div class="wt-amount" id="wtAmount"><span class="wt-num">0</span><small>kg</small></div>
 </div>
 
 <!-- Nakladnoy modal oyna -->
@@ -2657,6 +2740,149 @@ document.addEventListener('keydown', function(event) {
     }
     window.addEventListener('load', run);
     window.addEventListener('online', run);
+})();
+</script>
+<script>
+// ===== Umumiy og'irlik: mahsulot sonini yozganda og'irlik (kg -> T) animatsiya bilan o'sib boradi =====
+(function () {
+    // Bitta blokning og'irligi (kg): PET, RGB, CAN. KEG uchun bitta kegning og'irligi (kg): 30L = 40 kg, 20L = 30 kg.
+    const KG_PER_BLOCK = { PET: 9, RGB: 17, CAN: 11 };
+    const KG_PER_KEG = { 30: 40, 20: 30 };
+
+    const box = document.getElementById('weightTotal');
+    if (!box) return;
+    const amtEl = document.getElementById('wtAmount');
+    const detailEl = document.getElementById('wtDetail');
+
+    let shown = 0, target = 0, tweenId = null;
+    let lastSig = '', lastFx = 0, pendingDelta = 0, deltaTimer = null;
+
+    function typeOf(name) {
+        const m = String(name).match(/\b(PET|RGB|CAN)\b/);
+        return m ? m[1] : null;
+    }
+    // KEG nomidan hajmni (30L / 20L) olib, bitta kegning og'irligini qaytaradi; topilmasa null
+    function kegKg(name) {
+        const m = String(name).match(/\bKEG\s*(\d+)\s*L\b/i);
+        return m && KG_PER_KEG[parseInt(m[1])] ? KG_PER_KEG[parseInt(m[1])] : null;
+    }
+    function trimNum(n) { return String(parseFloat(n.toFixed(1))); }
+
+    // exact=false: animatsiya paytida butun kg; exact=true: oxirgi qiymat (0.1 kg gacha)
+    function weightParts(kg, exact) {
+        const v = exact ? Math.round(kg * 10) / 10 : Math.round(kg);
+        if (v >= 1000) {
+            const t = Math.floor(v / 1000);
+            const r = Math.round((v - t * 1000) * 10) / 10;
+            return { t: t, kg: r };
+        }
+        return { t: 0, kg: v };
+    }
+    function weightHTML(kg, exact) {
+        const p = weightParts(kg, exact);
+        if (p.t > 0) {
+            return '<span class="wt-num">' + p.t + '</span><small>T</small> <span class="wt-num">' + trimNum(p.kg) + '</span><small>kg</small>';
+        }
+        return '<span class="wt-num">' + trimNum(p.kg) + '</span><small>kg</small>';
+    }
+    function weightText(kg) {
+        const p = weightParts(kg, true);
+        return p.t > 0 ? p.t + ' T ' + trimNum(p.kg) + ' kg' : trimNum(p.kg) + ' kg';
+    }
+
+    function compute() {
+        const by = { PET: 0, RGB: 0, CAN: 0, KEG: 0 };
+        let total = 0, kegs = 0;
+        document.querySelectorAll('.product input').forEach(i => {
+            const b = parseFloat(i.value) || 0;
+            if (b <= 0) return;
+            const t = typeOf(i.dataset.name);
+            if (t) { by[t] += b * KG_PER_BLOCK[t]; total += b * KG_PER_BLOCK[t]; }
+            else if (isKeg(i.dataset.name)) {
+                const kk = kegKg(i.dataset.name);
+                if (kk) { by.KEG += b * kk; total += b * kk; }
+                else kegs += b;   // og'irligi noma'lum keg (hajm nomida yo'q)
+            }
+        });
+        total = Math.round(total * 100) / 100;
+        return { total: total, by: by, kegs: kegs };
+    }
+
+    function detailText(c) {
+        const parts = [];
+        ['PET', 'RGB', 'CAN', 'KEG'].forEach(t => { if (c.by[t] > 0) parts.push(t + ' ' + weightText(c.by[t])); });
+        if (c.kegs > 0) parts.push('og\'irligi noma\'lum KEG hisobga olinmagan');
+        return parts.length ? parts.join(' · ') : 'Mahsulot tanlanmagan';
+    }
+
+    function tweenTo(to) {
+        const from = shown;
+        const t0 = performance.now();
+        const dur = 650;
+        cancelAnimationFrame(tweenId);
+        function step(now) {
+            const p = Math.min((now - t0) / dur, 1);
+            const e = 1 - Math.pow(1 - p, 3);
+            shown = from + (to - from) * e;
+            if (p < 1) {
+                amtEl.innerHTML = weightHTML(shown, false);
+                tweenId = requestAnimationFrame(step);
+            } else {
+                shown = to;
+                amtEl.innerHTML = weightHTML(to, true);
+            }
+        }
+        tweenId = requestAnimationFrame(step);
+    }
+
+    function spawnDelta() {
+        const d = pendingDelta;
+        pendingDelta = 0;
+        if (!d) return;
+        box.querySelectorAll('.wt-delta').forEach(n => n.remove());
+        const chip = document.createElement('div');
+        chip.className = 'wt-delta' + (d < 0 ? ' neg' : '');
+        chip.textContent = (d > 0 ? '+' : '\u2212') + weightText(Math.abs(d));
+        box.appendChild(chip);
+        setTimeout(() => chip.remove(), 1200);
+    }
+
+    function fx(diff) {
+        const now = performance.now();
+        const up = diff > 0;
+        amtEl.classList.toggle('down', !up);
+        if (now - lastFx > 280) {
+            lastFx = now;
+            box.classList.remove('wt-up', 'wt-down');
+            amtEl.classList.remove('bump');
+            void box.offsetWidth;
+            box.classList.add(up ? 'wt-up' : 'wt-down');
+            amtEl.classList.add('bump');
+        }
+        pendingDelta += diff;
+        clearTimeout(deltaTimer);
+        deltaTimer = setTimeout(spawnDelta, 260);
+        setTimeout(() => amtEl.classList.remove('down'), 700);
+    }
+
+    function check() {
+        const c = compute();
+        const sig = c.total + '|' + c.kegs + '|' + c.by.PET + '|' + c.by.RGB + '|' + c.by.CAN + '|' + c.by.KEG;
+        if (sig === lastSig) return;
+        lastSig = sig;
+        detailEl.textContent = detailText(c);
+        box.classList.toggle('empty', c.total === 0 && c.kegs === 0);
+        if (c.total !== target) {
+            const diff = c.total - target;
+            target = c.total;
+            tweenTo(target);
+            fx(diff);
+        }
+    }
+
+    // Qo'lda yozilganda ham, Сброс / История orqali dasturiy o'zgarganda ham ishlaydi
+    document.addEventListener('input', check);
+    setInterval(check, 100);
 })();
 </script>
 </body>
